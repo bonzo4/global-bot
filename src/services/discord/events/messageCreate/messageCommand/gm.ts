@@ -40,11 +40,6 @@ export default class GmMessageCommand implements MessageCommand {
       !guildIconUrl ||
       (guildIconUrl === guildRow.icon_url && guildRow.gm_url)
     ) {
-      await message.reply({
-        embeds: [
-          EmbedUtils.GmMessage(guildRow, userRow, Boolean(guildRow.gm_url)),
-        ],
-      });
       shard.broadcastEval(broadcastGM, {
         context: {
           userId: userRow.id,
@@ -87,11 +82,6 @@ export default class GmMessageCommand implements MessageCommand {
       icon_url: guildIconUrl,
     });
 
-    await message.reply({
-      embeds: [
-        EmbedUtils.GmMessage(guildRow, userRow, Boolean(guildRow.gm_url)),
-      ],
-    });
     shard.broadcastEval(broadcastGM, {
       context: {
         userId: userRow.id,
