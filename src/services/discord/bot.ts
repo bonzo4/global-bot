@@ -30,7 +30,6 @@ export default class Bot {
     const client = new Client({
       intents: [
         'Guilds',
-        'GuildMembers',
         'GuildMessages',
         'GuildMessageReactions',
         'DirectMessages',
