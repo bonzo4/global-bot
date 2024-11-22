@@ -72,7 +72,7 @@ export default class FixGlobalChannelCommand implements CommandHandler {
       await interaction.followUp({
         embeds: [
           EmbedUtils.Warning(
-            `The channel ${channelMention(selectedChannel.id)} does not access to ${selectGlobalChannel.channel_access} anymore.\n\nPlease renew your subscription or switch back to general access using **/messageCreate**.`,
+            `The channel ${channelMention(selectedChannel.id)} does not have access to ${selectGlobalChannel.channel_access} anymore.\n\nPlease renew your subscription or switch back to general access using **/messageCreate**.`,
           ),
         ],
         ephemeral: true,
