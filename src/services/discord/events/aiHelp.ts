@@ -1,12 +1,18 @@
-import { Client } from 'discord.js';
+import { ChannelType, Client } from 'discord.js';
 import { EventHandler } from '.';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
-import { getUser } from 'src/lib/data/users/getUser';
+import { getMessage } from 'src/lib/data/messages/getMessage';
+import { getAiResponse } from 'src/lib/data/aiResponses/getAiResponse';
+import { AiResponseRow } from 'src/lib/types/messages';
+import { ChannelRow } from 'src/lib/types/channels';
+import { getGuild } from 'src/lib/data/guilds/getGuild';
+import { getGuildChannelAccess } from 'src/lib/data/channels/getGuildChannelAccess';
 import { SendingUtils } from 'src/lib/utils/sending';
+import { getUser } from 'src/lib/data/users/getUser';
 
-export default class GmMessageHandler implements EventHandler {
-  eventName = 'gmMessage';
+export default class AiHelpHandler implements EventHandler {
+  eventName = 'aiHelp';
 
   constructor(
     private readonly client: Client,
@@ -14,17 +20,19 @@ export default class GmMessageHandler implements EventHandler {
   ) {}
 
   process = async ({
-    userId,
+    responseId,
     sourceChannelId,
   }: {
-    userId: string;
+    responseId: string;
     sourceChannelId: string;
-    hasGuildIcon: boolean;
   }): Promise<void> => {
     const sourceChannel = await getGlobalChannel(sourceChannelId);
     if (!sourceChannel) return;
 
-    const userRow = await getUser(userId);
+    const responseRow = await getAiResponse(responseId);
+    if (!responseRow) return;
+
+    const userRow = await getUser(responseRow.discord_user_id);
     if (!userRow) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
@@ -34,8 +42,8 @@ export default class GmMessageHandler implements EventHandler {
         userRow,
         sourceChannel,
         payload: {
-          type: 'gmMessage',
-          data: null,
+          type: 'aiResponse',
+          data: responseRow,
         },
       });
       await sendingUtils.handleChannel().catch((err) => {

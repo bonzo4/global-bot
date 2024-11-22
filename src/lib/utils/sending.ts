@@ -1,0 +1,213 @@
+import {
+  ChannelType,
+  Client,
+  EmbedBuilder,
+  SnowflakeUtil,
+  TextChannel,
+  WebhookClient,
+} from 'discord.js';
+import { ChannelRow } from '../types/channels';
+import { UserRow } from '../types/user';
+import { AiResponseRow, MessageRow } from '../types/messages';
+import { EmbedUtils } from './embeds';
+import RequiredPermissions from './permissions';
+import { deleteGlobalChannel } from '../data/channels/deleteGlobalChannel';
+import ChannelCache from './channelCache';
+import { getGlobalChannel } from '../data/channels/getGlobalChannel';
+import { getGuild } from '../data/guilds/getGuild';
+import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
+import { GuildRow } from '../types/guilds';
+
+type DataOptions = {
+  channelId: string;
+  userRow: UserRow;
+  sourceChannel: ChannelRow;
+  payload:
+    | { type: 'message'; data: MessageRow }
+    | { type: 'aiResponse'; data: AiResponseRow }
+    | { type: 'gmMessage'; data: null };
+};
+
+export class SendingUtils {
+  constructor(
+    private readonly client: Client,
+    private readonly channelCache: ChannelCache,
+    private readonly dataOptions: DataOptions,
+  ) {}
+
+  public async handleChannel(): Promise<void> {
+    const { channelId, userRow, sourceChannel, payload } = this.dataOptions;
+    const channelData = await getGlobalChannel(channelId);
+    const channel = await this.client.channels.fetch(channelId);
+
+    if (!channelData || !channel || channel.type !== ChannelType.GuildText) {
+      await this.cleanupChannel(channelId);
+      return;
+    }
+
+    const guildData = await getGuild(channelData.guild_id);
+    if (!guildData) return;
+
+    if (sourceChannel.channel_access !== channelData.channel_access) {
+      return;
+    }
+
+    const guildChannelAccess = await getGuildChannelAccess(guildData.id);
+    const hasGuildAccess = guildChannelAccess.some(
+      (access) => access.channel_access === channelData.channel_access,
+    );
+    if (!hasGuildAccess) {
+      await this.sendWarningMessage(
+        channelData.webhook_url,
+        `This Channel has lost access to ${channelData.channel_access}.`,
+        channel,
+      );
+      return;
+    }
+
+    if (!this.hasRequiredPermissions(channel)) {
+      await this.sendWarningMessage(
+        channelData.webhook_url,
+        `I don't have the required permissions to send messages in this channel.`,
+        channel,
+      );
+      return;
+    }
+
+    if (payload.type === 'message') {
+      await this.sendGlobalMessage(
+        channelData.webhook_url,
+        payload.data,
+        userRow,
+        guildData,
+      );
+    } else if (payload.type === 'gmMessage') {
+      await this.sendGMMessage(
+        channelData.webhook_url,
+        userRow,
+        guildData,
+        guildData.gm_url !== null,
+      );
+    } else if (payload.type === 'aiResponse') {
+      await this.sendAiMessage(channelData.webhook_url, payload.data);
+    }
+  }
+
+  private async cleanupChannel(channelId: string): Promise<void> {
+    this.channelCache.removeGlobalChannel(channelId);
+    await deleteGlobalChannel(channelId);
+  }
+
+  private hasRequiredPermissions(channel: TextChannel): boolean {
+    if (!channel.guild.members.me) return false;
+    const permissions = channel.permissionsFor(channel.guild.members.me);
+    const missingPermissions =
+      permissions?.missing(RequiredPermissions.globalPermissions) || [];
+    return missingPermissions.length === 0;
+  }
+
+  private async sendWarningMessage(
+    webhookUrl: string,
+    warning: string,
+    channel: TextChannel,
+  ): Promise<void> {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const nonce = SnowflakeUtil.generate().toString();
+
+    const lastMessage = (await channel.messages.fetch({ limit: 1 })).at(0);
+    if (lastMessage && lastMessage.author.username === 'Global Message') {
+      const sameContent =
+        JSON.stringify(lastMessage.embeds[0].toJSON()) ===
+        JSON.stringify(EmbedUtils.Warning(warning).toJSON());
+      if (lastMessage.deletable && !sameContent) {
+        await lastMessage.delete();
+      } else {
+        return;
+      }
+    }
+
+    await globalWebhook.send({
+      embeds: [EmbedUtils.Warning(warning)],
+      username: 'Global Message',
+      avatarURL:
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+
+  private async sendGlobalMessage(
+    webhookUrl: string,
+    messageData: MessageRow,
+    userRow: UserRow,
+    guildRow: GuildRow,
+  ): Promise<void> {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const name = userRow.display_name ? userRow.display_name : userRow.username;
+    const tag = guildRow.tag ? `[${guildRow.tag.toUpperCase()}] ` : '';
+    const icon = userRow.is_admin
+      ? ' 🌎'
+      : userRow.is_mod
+        ? ' 🛡'
+        : userRow.is_verified
+          ? ' ⭐️'
+          : '';
+    const username = tag + name + icon;
+    const nonce = SnowflakeUtil.generate().toString();
+
+    await globalWebhook.send({
+      content: messageData.content,
+      username,
+      avatarURL:
+        userRow.avatar_url ||
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+
+  private async sendAiMessage(webhookUrl: string, responseRow: AiResponseRow) {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const nonce = SnowflakeUtil.generate().toString();
+
+    await globalWebhook.send({
+      content: responseRow.response,
+      username: '🌐Global AI Helper',
+      avatarURL:
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+
+  private async sendGMMessage(
+    webhookUrl: string,
+    userRow: UserRow,
+    guildRow: GuildRow,
+    hasGuildIcon: boolean,
+  ) {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const nonce = SnowflakeUtil.generate().toString();
+
+    await globalWebhook.send({
+      embeds: [EmbedUtils.GmMessage(guildRow, userRow, hasGuildIcon)],
+      username: '🌐Syndicate Global',
+      avatarURL:
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+}

@@ -32,6 +32,7 @@
     "i18next": "^23.16.5",
     "jimp": "^1.6.0",
     "obscenity": "^0.4.0",
+    "openai": "^4.73.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

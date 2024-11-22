@@ -9,6 +9,7 @@ import { Jimp } from 'jimp';
 import { supabase } from 'src/lib/supabase';
 import { promises as fs } from 'node:fs';
 import { updateGuild } from 'src/lib/data/guilds/updateGuild';
+import { EmbedUtils } from 'src/lib/utils/embeds';
 
 export default class GmMessageCommand implements MessageCommand {
   name = 'gm';
@@ -35,23 +36,19 @@ export default class GmMessageCommand implements MessageCommand {
 
     const guildIconUrl = message.guild.iconURL({ extension: 'png' });
 
-    if (!guildIconUrl) {
-      shard.broadcastEval(broadcastGM, {
-        context: {
-          userId: userRow.id,
-          sourceChannelId: message.channel.id,
-          hasGuildIcon: false,
-        },
+    if (
+      !guildIconUrl ||
+      (guildIconUrl === guildRow.icon_url && guildRow.gm_url)
+    ) {
+      await message.reply({
+        embeds: [
+          EmbedUtils.GmMessage(guildRow, userRow, Boolean(guildRow.gm_url)),
+        ],
       });
-      return;
-    }
-
-    if (guildIconUrl === guildRow.icon_url && guildRow.gm_url) {
       shard.broadcastEval(broadcastGM, {
         context: {
           userId: userRow.id,
           sourceChannelId: message.channel.id,
-          hasGuildIcon: true,
         },
       });
       return;
@@ -85,16 +82,20 @@ export default class GmMessageCommand implements MessageCommand {
       .from('GM Images')
       .getPublicUrl(`gm_${message.guildId}_${nonce}.png`);
 
-    await updateGuild(message.guildId, {
+    guildRow = await updateGuild(message.guildId, {
       gm_url: publicUrl,
       icon_url: guildIconUrl,
     });
 
+    await message.reply({
+      embeds: [
+        EmbedUtils.GmMessage(guildRow, userRow, Boolean(guildRow.gm_url)),
+      ],
+    });
     shard.broadcastEval(broadcastGM, {
       context: {
         userId: userRow.id,
         sourceChannelId: message.channel.id,
-        hasGuildIcon: true,
       },
     });
   };
@@ -102,11 +103,7 @@ export default class GmMessageCommand implements MessageCommand {
 
 export function broadcastGM(
   client: Client,
-  {
-    userId,
-    sourceChannelId,
-    hasGuildIcon,
-  }: { userId: string; sourceChannelId: string; hasGuildIcon: boolean },
+  { userId, sourceChannelId }: { userId: string; sourceChannelId: string },
 ) {
-  client.emit('gmMessage', { userId, sourceChannelId, hasGuildIcon });
+  client.emit('gmMessage', { userId, sourceChannelId });
 }
