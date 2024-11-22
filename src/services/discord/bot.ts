@@ -22,6 +22,7 @@ import FlipMessageCommand from './events/messageCreate/messageCommand/flip';
 import StealMessageCommand from './events/messageCreate/messageCommand/steal';
 import SetGlobalCommand from './events/messageCreate/messageCommand/set-global-channel';
 import AiHelpMessageCommand from './events/messageCreate/messageCommand/aihelp';
+import AiHelpHandler from './events/aiHelp';
 
 export default class Bot {
   constructor() {}
@@ -77,6 +78,7 @@ export default class Bot {
         new GlobalMessageHandler(client, channelCache),
         new GlobalBanHandler(client, channelCache),
         new GmMessageHandler(client, channelCache),
+        new AiHelpHandler(client, channelCache),
       ]);
       await eventManager.start();
     });

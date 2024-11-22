@@ -2,8 +2,6 @@ import { Client, Message } from 'discord.js';
 import { MessageCommand } from '.';
 import { GuildRow } from 'src/lib/types/guilds';
 import { UserRow } from 'src/lib/types/user';
-import { getGameStats } from 'src/lib/data/game/getGameStats';
-import insertGameStats from 'src/lib/data/game/insertGameStats';
 import { aiClient } from 'src/lib/openai';
 import { insertAiResponse } from 'src/lib/data/aiResponses/insertAiResponse';
 

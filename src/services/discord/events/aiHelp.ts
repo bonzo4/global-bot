@@ -1,13 +1,8 @@
-import { ChannelType, Client } from 'discord.js';
+import { Client } from 'discord.js';
 import { EventHandler } from '.';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
-import { getMessage } from 'src/lib/data/messages/getMessage';
 import { getAiResponse } from 'src/lib/data/aiResponses/getAiResponse';
-import { AiResponseRow } from 'src/lib/types/messages';
-import { ChannelRow } from 'src/lib/types/channels';
-import { getGuild } from 'src/lib/data/guilds/getGuild';
-import { getGuildChannelAccess } from 'src/lib/data/channels/getGuildChannelAccess';
 import { SendingUtils } from 'src/lib/utils/sending';
 import { getUser } from 'src/lib/data/users/getUser';
 
