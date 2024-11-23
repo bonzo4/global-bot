@@ -79,7 +79,7 @@ export default class GlobalBanCommand implements CommandHandler {
       banned: true,
     });
 
-    shard.broadcastEval(broadcastBan, {
+    await shard.broadcastEval(broadcastBan, {
       context: {
         userId: user.id,
       },

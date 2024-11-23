@@ -3,6 +3,7 @@ import CommandManager, {
 } from 'src/services/discord/events/interactions/commands';
 import ChannelCache from './channelCache';
 import 'dotenv/config';
+import { Logger } from '@nestjs/common';
 
 require('dotenv').config();
 
@@ -26,7 +27,7 @@ async function registerCommands() {
     if (removedCommands.length) {
       await CommandManager.deleteCommands(removedCommands);
     }
-    console.log(
+    Logger.log(
       'Removed commands:',
       removedCommands.map((c) => c.name),
     );
@@ -34,7 +35,7 @@ async function registerCommands() {
     if (newCommands.length) {
       await CommandManager.registerCommands(newCommands);
     }
-    console.log(
+    Logger.log(
       'New commands:',
       newCommands.map((c) => c.name),
     );
@@ -54,12 +55,12 @@ async function registerCommands() {
       });
       await CommandManager.updateCommands(commandsWithId);
     }
-    console.log(
+    Logger.log(
       'Updated commands:',
       commandsToUpdate.map((c) => c.name),
     );
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
   }
 }
 

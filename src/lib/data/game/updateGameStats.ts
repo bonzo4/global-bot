@@ -1,5 +1,5 @@
 import { supabase } from 'src/lib/supabase';
-import { GameStatsUpdate } from 'src/lib/types/user';
+import { GameStatsUpdate } from 'src/lib/types/game';
 
 export async function updateGameStats(
   userId: string,

@@ -1,4 +1,4 @@
-import { Injectable, Module } from '@nestjs/common';
+import { Injectable, Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import {
   Client,
@@ -15,7 +15,7 @@ export default class BotManager {
   public manager: ShardingManager;
 
   public async start() {
-    console.log('Starting bot manager');
+    Logger.log('Starting bot manager');
     const manager = new ShardingManager(
       './dist/services/discord/start-bot.js',
       {
@@ -26,7 +26,7 @@ export default class BotManager {
     this.manager = manager;
 
     const serverCount = await this.getServerCount();
-    console.log(`Server count: ${serverCount}`);
+    Logger.log(`Server count: ${serverCount}`);
 
     await manager.spawn({
       amount: Math.ceil(serverCount / 100),
@@ -50,7 +50,7 @@ export default class BotManager {
 
   public broadcastAPI() {
     this.manager.broadcastEval((client) => {
-      console.log('Broadcasting API event', client.user?.username);
+      Logger.log('Broadcasting API event', client.user?.username);
       client.emit('broadcastAPI', { message: 'Hello from API' });
     });
   }

@@ -3,6 +3,7 @@ import { EventHandler } from '.';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { getUser } from 'src/lib/data/users/getUser';
 import { updateMessage } from 'src/lib/data/messages/updateMessage';
+import { Logger } from '@nestjs/common';
 
 export default class GlobalBanHandler implements EventHandler {
   eventName = 'globalBan';
@@ -16,7 +17,7 @@ export default class GlobalBanHandler implements EventHandler {
     const channelIds = this.channelCache.getGlobalChannelIds();
     for (const channelId of channelIds) {
       this.handleChannel(channelId, userId).catch((err) => {
-        console.error(`Error processing global ban: ${err.message}`);
+        Logger.error(`Error processing global ban: ${err.message}`);
       });
     }
   };

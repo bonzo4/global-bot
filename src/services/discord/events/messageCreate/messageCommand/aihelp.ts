@@ -10,7 +10,7 @@ export default class AiHelpMessageCommand implements MessageCommand {
 
   process = async (
     message: Message<true>,
-    guildRow: GuildRow,
+    _guildRow: GuildRow,
     userRow: UserRow,
   ): Promise<void> => {
     const shard = message.client.shard;
@@ -28,10 +28,10 @@ export default class AiHelpMessageCommand implements MessageCommand {
       discord_user_id: userRow.id,
     });
 
-    shard.broadcastEval(broadcastAiHelp, {
+    await shard.broadcastEval(broadcastAiHelp, {
       context: {
         responseId: aiResponse.id,
-        channelId: message.channel.id,
+        sourceChannelId: message.channel.id,
       },
     });
   };
@@ -68,7 +68,10 @@ export default class AiHelpMessageCommand implements MessageCommand {
 
 export function broadcastAiHelp(
   client: Client,
-  { responseId, channelId }: { responseId: number; channelId: string },
+  {
+    responseId,
+    sourceChannelId,
+  }: { responseId: number; sourceChannelId: string },
 ) {
-  client.emit('aiHelp', { responseId, channelId });
+  client.emit('aiHelp', { responseId, sourceChannelId });
 }

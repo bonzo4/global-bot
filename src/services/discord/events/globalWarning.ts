@@ -1,14 +1,13 @@
 import { Client } from 'discord.js';
-import { EventHandler } from '.';
 import ChannelCache from 'src/lib/utils/channelCache';
+import { EventHandler } from '.';
 import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
-import { getMessage } from 'src/lib/data/messages/getMessage';
 import { getUser } from 'src/lib/data/users/getUser';
 import { SendingUtils } from 'src/lib/utils/sending';
 import { Logger } from '@nestjs/common';
 
-export default class GlobalMessageHandler implements EventHandler {
-  eventName = 'globalMessage';
+export default class GlobalWarningHanlder implements EventHandler {
+  eventName = 'globalWarning';
 
   constructor(
     private readonly client: Client,
@@ -16,35 +15,33 @@ export default class GlobalMessageHandler implements EventHandler {
   ) {}
 
   process = async ({
-    messageId,
+    warning,
+    userId,
     sourceChannelId,
   }: {
-    messageId: string;
+    warning: string;
+    userId: string;
     sourceChannelId: string;
   }): Promise<void> => {
     const sourceChannel = await getGlobalChannel(sourceChannelId);
     if (!sourceChannel) return;
 
-    const messageData = await getMessage(messageId);
-    if (!messageData || messageData.deleted) return;
-
-    const user = await getUser(messageData.user_id);
-    if (!user) return;
+    const userRow = await getUser(userId);
+    if (!userRow) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
     for (const channelId of channelIds) {
-      if (sourceChannelId === channelId) continue;
       const sendingUtils = new SendingUtils(this.client, this.channelCache, {
         channelId,
-        userRow: user,
+        userRow,
         sourceChannel,
         payload: {
-          type: 'message',
-          data: messageData,
+          type: 'warning',
+          data: warning,
         },
       });
       await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing global message: ${err.message}`);
+        Logger.error(`Error processing global warning: ${err}`);
       });
     }
   };

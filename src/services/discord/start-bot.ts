@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import Bot from './bot';
 
 async function start() {
@@ -7,12 +8,12 @@ async function start() {
 }
 
 process.on('unhandledRejection', (error) => {
-  console.error('Unhandled promise rejection:', error);
+  Logger.error('Unhandled promise rejection:', error);
   process.exit(1);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+  Logger.error('Uncaught exception:', error);
   process.exit(1);
 });
 

@@ -108,7 +108,7 @@ export default class MessageCreateHandler implements EventHandler {
       return;
     }
 
-    shard.broadcastEval(broadcastGlobalMessage, {
+    await shard.broadcastEval(broadcastGlobalMessage, {
       context: { messageId: message.id, sourceChannelId: message.channel.id },
     });
 

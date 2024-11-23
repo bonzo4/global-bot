@@ -59,7 +59,7 @@ export default class ChangeTopicCommand implements CommandHandler {
       return;
     }
 
-    shard.broadcastEval(BroadcastTopic, { context: { topic } });
+    await shard.broadcastEval(BroadcastTopic, { context: { topic } });
 
     await interaction.followUp({
       embeds: [EmbedUtils.Success(`The topic has been set.`)],

@@ -347,6 +347,7 @@ export type Database = {
       };
       game_flips: {
         Row: {
+          choice: Database['public']['Enums']['flip_results'];
           created_at: string;
           guild_id: string;
           id: number;
@@ -355,6 +356,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          choice: Database['public']['Enums']['flip_results'];
           created_at?: string;
           guild_id: string;
           id?: number;
@@ -363,6 +365,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          choice?: Database['public']['Enums']['flip_results'];
           created_at?: string;
           guild_id?: string;
           id?: number;
@@ -910,6 +913,7 @@ export type Database = {
       };
       messages: {
         Row: {
+          channel_access: Database['public']['Enums']['channel_type'] | null;
           content: string;
           created_at: string;
           deleted: boolean;
@@ -918,6 +922,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          channel_access?: Database['public']['Enums']['channel_type'] | null;
           content: string;
           created_at?: string;
           deleted?: boolean;
@@ -926,6 +931,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          channel_access?: Database['public']['Enums']['channel_type'] | null;
           content?: string;
           created_at?: string;
           deleted?: boolean;
@@ -1773,6 +1779,7 @@ export type Database = {
     };
     Enums: {
       channel_type: 'whitelist' | 'general' | 'superteam' | 'test';
+      flip_results: 'heads' | 'tails';
       interaction_type:
         | 'POLL'
         | 'QUIZ'

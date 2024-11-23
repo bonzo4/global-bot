@@ -5,6 +5,7 @@ import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
 import { getAiResponse } from 'src/lib/data/aiResponses/getAiResponse';
 import { SendingUtils } from 'src/lib/utils/sending';
 import { getUser } from 'src/lib/data/users/getUser';
+import { Logger } from '@nestjs/common';
 
 export default class AiHelpHandler implements EventHandler {
   eventName = 'aiHelp';
@@ -18,7 +19,7 @@ export default class AiHelpHandler implements EventHandler {
     responseId,
     sourceChannelId,
   }: {
-    responseId: string;
+    responseId: number;
     sourceChannelId: string;
   }): Promise<void> => {
     const sourceChannel = await getGlobalChannel(sourceChannelId);
@@ -42,7 +43,7 @@ export default class AiHelpHandler implements EventHandler {
         },
       });
       await sendingUtils.handleChannel().catch((err) => {
-        console.error(`Error processing global message: ${err.message}`);
+        Logger.error(`Error processing ai response: ${err.message}`);
       });
     }
   };

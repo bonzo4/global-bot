@@ -1,8 +1,8 @@
 import { supabase } from 'src/lib/supabase';
 
-export async function getAiResponse(id: number) {
+export async function getGameSteal(id: number) {
   const { data, error } = await supabase
-    .from('ai_responses')
+    .from('game_steals')
     .select('*')
     .eq('id', id)
     .single();

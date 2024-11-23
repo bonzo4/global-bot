@@ -1,6 +1,7 @@
 import { ChannelType, Client } from 'discord.js';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { EventHandler } from '.';
+import { Logger } from '@nestjs/common';
 
 export default class ChangeTopicHandler implements EventHandler {
   eventName = 'changeTopic';
@@ -14,7 +15,7 @@ export default class ChangeTopicHandler implements EventHandler {
     const channelIds = this.channelCache.getGlobalChannelIds();
     for (const channelId of channelIds) {
       this.handleChannel(channelId, topic).catch((err) => {
-        console.error(`Error processing change topic: ${err.message}`);
+        Logger.error(`Error processing change topic: ${err.message}`);
       });
     }
   };

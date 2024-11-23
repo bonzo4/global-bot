@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Client, ClientEvents } from 'discord.js';
 
 export interface EventHandler {
@@ -26,7 +27,7 @@ export default class EventManager {
     try {
       await process(...args);
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   }
 }

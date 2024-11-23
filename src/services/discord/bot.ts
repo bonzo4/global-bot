@@ -23,6 +23,10 @@ import StealMessageCommand from './events/messageCreate/messageCommand/steal';
 import SetGlobalCommand from './events/messageCreate/messageCommand/set-global-channel';
 import AiHelpMessageCommand from './events/messageCreate/messageCommand/aihelp';
 import AiHelpHandler from './events/aiHelp';
+import FlipMessageHandler from './events/flipMessage';
+import GlobalWarningHanlder from './events/globalWarning';
+import { Logger } from '@nestjs/common';
+import StealMessageHandler from './events/stealMessage';
 
 export default class Bot {
   constructor() {}
@@ -48,7 +52,13 @@ export default class Bot {
   private async onReady(client: Client) {
     client.on('ready', async () => {
       const guildIds = await this.getAllGuildIds(client);
-      await this.saveShardIds(guildIds, client.shard?.ids[0] || 0);
+      const shard = client.shard;
+      if (!shard) {
+        client.destroy();
+        return;
+      }
+      Logger.log(`Shard ID Launched: ${shard.ids[0]}`);
+      await this.saveShardIds(guildIds, shard.ids[0]);
 
       const globalChannelIds = await this.getChannelIds(guildIds);
       const channelCache = new ChannelCache(globalChannelIds);
@@ -79,6 +89,9 @@ export default class Bot {
         new GlobalBanHandler(client, channelCache),
         new GmMessageHandler(client, channelCache),
         new AiHelpHandler(client, channelCache),
+        new FlipMessageHandler(client, channelCache),
+        new GlobalWarningHanlder(client, channelCache),
+        new StealMessageHandler(client, channelCache),
       ]);
       await eventManager.start();
     });

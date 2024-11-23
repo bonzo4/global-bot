@@ -9,7 +9,6 @@ import { Jimp } from 'jimp';
 import { supabase } from 'src/lib/supabase';
 import { promises as fs } from 'node:fs';
 import { updateGuild } from 'src/lib/data/guilds/updateGuild';
-import { EmbedUtils } from 'src/lib/utils/embeds';
 
 export default class GmMessageCommand implements MessageCommand {
   name = 'gm';
@@ -40,7 +39,7 @@ export default class GmMessageCommand implements MessageCommand {
       !guildIconUrl ||
       (guildIconUrl === guildRow.icon_url && guildRow.gm_url)
     ) {
-      shard.broadcastEval(broadcastGM, {
+      await shard.broadcastEval(broadcastGM, {
         context: {
           userId: userRow.id,
           sourceChannelId: message.channel.id,
@@ -82,7 +81,7 @@ export default class GmMessageCommand implements MessageCommand {
       icon_url: guildIconUrl,
     });
 
-    shard.broadcastEval(broadcastGM, {
+    await shard.broadcastEval(broadcastGM, {
       context: {
         userId: userRow.id,
         sourceChannelId: message.channel.id,

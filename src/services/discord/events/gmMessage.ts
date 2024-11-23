@@ -4,6 +4,7 @@ import ChannelCache from 'src/lib/utils/channelCache';
 import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
 import { getUser } from 'src/lib/data/users/getUser';
 import { SendingUtils } from 'src/lib/utils/sending';
+import { Logger } from '@nestjs/common';
 
 export default class GmMessageHandler implements EventHandler {
   eventName = 'gmMessage';
@@ -39,7 +40,7 @@ export default class GmMessageHandler implements EventHandler {
         },
       });
       await sendingUtils.handleChannel().catch((err) => {
-        console.error(`Error processing global message: ${err.message}`);
+        Logger.error(`Error processing gm message: ${err.message}`);
       });
     }
   };
