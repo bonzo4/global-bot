@@ -95,6 +95,10 @@ export default class FlipMessageCommand implements MessageCommand {
       return 'Please provide a bet amount greater than 0.';
     }
 
+    if (betAmount > 1000) {
+      return 'Please provide a bet amount less than 1000.';
+    }
+
     if (betAmount > gameStats.total_points) {
       return 'Please provide a bet amount less or equal than your total points.';
     }

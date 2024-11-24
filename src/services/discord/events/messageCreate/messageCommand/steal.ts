@@ -130,6 +130,10 @@ export default class StealMessageCommand implements MessageCommand {
       return 'Please provide a positive bet amount.';
     }
 
+    if (amountNum > 1000) {
+      return 'You cannot steal more than 1000 points at a time.';
+    }
+
     if (amountNum > gameStats.total_points) {
       return 'You do not have enough points to steal that amount.';
     }
