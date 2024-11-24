@@ -32,6 +32,7 @@ import { PollButtonHandler } from './events/interactions/buttons/poll';
 import SetGlobalGeneralMessageCommand from './events/messageCreate/messageCommand/set-global-general';
 import SetGlobalSuperteamMessageCommand from './events/messageCreate/messageCommand/set-global-superteam';
 import SetGlobalWhitelistMessageCommand from './events/messageCreate/messageCommand/set-global-whitelist';
+import HookMessageHandler from './events/hookMessage';
 
 export default class Bot {
   constructor() {}
@@ -100,6 +101,7 @@ export default class Bot {
         new FlipMessageHandler(client, channelCache),
         new GlobalWarningHanlder(client, channelCache),
         new StealMessageHandler(client, channelCache),
+        new HookMessageHandler(client, channelCache),
       ]);
       await eventManager.start();
     });

@@ -26,8 +26,7 @@ type DataOptions = {
     type: 'hookMessage';
     data: {
       message: HookMessage;
-      embeds: EmbedRow[];
-      buttons: EmbedButton[];
+      embeds: { embed: EmbedRow[]; buttons: EmbedButton[] }[];
       access: MessageAccess[];
     };
   };
@@ -45,7 +44,7 @@ export class ScheduledMessageUtils {
     private readonly dataOptions: DataOptions,
   ) {}
 
-  public async handleChananel(): Promise<void> {
+  public async handleChannel(): Promise<void> {
     const { channelId, payload } = this.dataOptions;
     const channelData = await getGlobalChannel(channelId);
     const channel = await this.client.channels.fetch(channelId);
@@ -87,14 +86,12 @@ export class ScheduledMessageUtils {
       return;
     }
 
-    const buttonRows = await this.getButtonRows(payload.data.buttons);
-
     // send message
     if (payload.type === 'hookMessage') {
-      await this.sendHookMessage(channelData.webhook_url, {
-        embeds: payload.data.embeds,
-        buttons: buttonRows,
-      });
+      for (const embed of payload.data.embeds) {
+        const buttonRows = await this.getButtonRows(embed.buttons);
+        await this.sendHookMessage(channelData.webhook_url, embed);
+      }
     } else {
       return;
     }
@@ -152,7 +149,10 @@ export class ScheduledMessageUtils {
     const buttonRows = buttons.map((button) => {
       switch (button.type) {
         case 'poll': {
-          return pollButtons(button.pollChoices, true);
+          return pollButtons(
+            button.data.pollChoices,
+            button.data.poll.is_random,
+          );
         }
         default:
           return [];
@@ -164,17 +164,21 @@ export class ScheduledMessageUtils {
 
   private async sendHookMessage(
     webhookUrl: string,
-    payload: SendContent,
+    embeds: { embed: EmbedRow[]; buttons: EmbedButton[] },
   ): Promise<void> {
     const globalWebhook = new WebhookClient({ url: webhookUrl });
 
     const nonce = SnowflakeUtil.generate().toString();
 
-    const embeds = payload.embeds.map((embed) => embed.content) as APIEmbed[];
+    const buttons = await this.getButtonRows(embeds.buttons);
+
+    const embedContent = embeds.embed.map(
+      (embed) => embed.content,
+    ) as APIEmbed[];
 
     await globalWebhook.send({
-      embeds,
-      components: payload.buttons,
+      embeds: embedContent,
+      components: buttons,
       username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
