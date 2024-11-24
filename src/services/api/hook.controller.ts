@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Header,
+  HttpCode,
   HttpException,
   HttpStatus,
   Post,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import BroadcastManager from '../discord/broadcastManager';
 import { getHookMessage } from 'src/lib/data/messages/getHookMessage';
+import { Status } from 'discord.js';
 
 type ScheduleHookBody = {
   hook_id: number;
