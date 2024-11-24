@@ -40,16 +40,16 @@ export class PollButtonHandler implements ButtonHandler {
     }
 
     const pollChoices = await getPollChoices(poll.id);
+    const pollInteractions = await getPollInteractions(
+      poll.id,
+      interaction.user.id,
+    );
+
+    const pollInteractionChoice = pollInteractions
+      .filter((interaction) => interaction.poll_choice_id !== null)
+      .at(0);
 
     if (choiceId === 'results') {
-      const pollInteractions = await getPollInteractions(
-        poll.id,
-        interaction.user.id,
-      );
-      const pollInteractionChoice = pollInteractions
-        .filter((interaction) => interaction.poll_choice_id !== null)
-        .at(0);
-
       if (!pollInteractionChoice) {
         const embeds = interaction.message.embeds;
         const components = interaction.message.components;
@@ -69,7 +69,7 @@ export class PollButtonHandler implements ButtonHandler {
         return;
       }
 
-      const resultsMessage = `You already voted.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+      const resultsMessage = `📊┃**Results**\n\n❓┃*Question*: ${
         poll.question
       }\n\n${this.formateResults(
         pollChoices,
@@ -85,6 +85,23 @@ export class PollButtonHandler implements ButtonHandler {
       });
       await interaction.followUp({
         embeds: [EmbedUtils.Info(resultsMessage)],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (pollInteractionChoice) {
+      const resultsMessage = `You already voted.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+        poll.question
+      }\n\n${this.formateResults(
+        pollChoices,
+        pollChoices.find(
+          (choice) => choice.id === pollInteraction.poll_choice_id,
+        ),
+      )}\n\n+100`;
+
+      await interaction.followUp({
+        embeds: [EmbedUtils.Success(resultsMessage)],
         ephemeral: true,
       });
       return;
@@ -118,21 +135,34 @@ export class PollButtonHandler implements ButtonHandler {
       poll.question
     }\n\n${this.formateResults(
       pollChoices,
-      pollChoices.find(
-        (choice) => choice.id === pollInteraction.poll_choice_id,
-      ),
+      pollChoices.find((choice) => choice.id === parseInt(choiceId, 10)),
+      true,
     )}\n\n+100`;
+
+    await interaction.followUp({
+      embeds: [EmbedUtils.Success(resultsMessage)],
+      ephemeral: true,
+    });
   };
 
-  private formateResults(results: PollChoice[], vote?: PollChoice): string {
-    const totalVotes = results.reduce((a, b) => a + b.votes, 0);
+  private formateResults(
+    results: PollChoice[],
+    vote?: PollChoice,
+    justVoted?: boolean,
+  ): string {
+    const totalVotes = results.reduce(
+      (a, b) => a + b.votes,
+      0 + (justVoted ? 1 : 0),
+    );
     let text = '';
     results.forEach((result, index) => {
       const percentageString =
-        `${(result.votes / totalVotes) * 100}`.split('.')[0] + '%';
+        `${(vote === result ? result.votes + (justVoted ? 1 : 0) : result.votes / totalVotes) * 100}`.split(
+          '.',
+        )[0] + '%';
       text +=
         vote === result
-          ? `✅┃${result.emoji}┃**${result.label}: ${result.votes} (${percentageString})**\n`
+          ? `✅┃${result.emoji}┃**${result.label}: ${result.votes + (justVoted ? 1 : 0)} (${percentageString})**\n`
           : `${this.getNumberEmoji(index)}┃${result.emoji}┃${result.label}: ${
               result.votes
             } (${percentageString})\n`;

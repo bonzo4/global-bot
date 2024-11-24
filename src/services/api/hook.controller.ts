@@ -32,7 +32,9 @@ export class HookController {
 
     await this.broadcastManager.scheduleHook(
       hookMessage.title,
-      new Date(hookMessage.schedule),
+      hookMessage.cron_string
+        ? hookMessage.cron_string
+        : new Date(hookMessage.schedule),
       hookMessage.id,
     );
 

@@ -21,8 +21,8 @@ export default class HookMessageHandler implements EventHandler {
     private readonly channelCache: ChannelCache,
   ) {}
 
-  process = async ({ hookId }: { hookId: number }): Promise<void> => {
-    const hookMessage = await getHookMessage(hookId);
+  process = async ({ messageId }: { messageId: number }): Promise<void> => {
+    const hookMessage = await getHookMessage(messageId);
     if (!hookMessage) return;
 
     const embeds = await getEmbedsByMessageId(hookMessage.id);

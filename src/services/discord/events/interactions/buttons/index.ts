@@ -18,7 +18,7 @@ export default class ButtonManager {
   }
 
   public getButton(customId: string) {
-    return this.buttons.find((btn) => btn.customId.startsWith(customId));
+    return this.buttons.find((btn) => customId.startsWith(btn.customId));
   }
 
   public async executeButton(

@@ -19,6 +19,7 @@ import RequiredPermissions from './permissions';
 import { getGuild } from '../data/guilds/getGuild';
 import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
 import { pollButtons } from 'src/services/discord/events/interactions/buttons/poll/components';
+import { Json } from '../supabase/types';
 
 type DataOptions = {
   channelId: string;
@@ -172,8 +173,8 @@ export class ScheduledMessageUtils {
 
     const buttons = await this.getButtonRows(embeds.buttons);
 
-    const embedContent = embeds.embed.map(
-      (embed) => embed.content,
+    const embedContent = embeds.embed.map((embed) =>
+      this.removeId(embed.content),
     ) as APIEmbed[];
 
     await globalWebhook.send({
@@ -187,5 +188,12 @@ export class ScheduledMessageUtils {
         nonce,
       },
     });
+  }
+
+  private removeId(content: Json): any {
+    if (!content) return content;
+    let parsedContent = JSON.parse(content.toString());
+    if (parsedContent.id) delete parsedContent.id;
+    return parsedContent;
   }
 }

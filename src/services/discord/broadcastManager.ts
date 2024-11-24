@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import BotManager from './manager';
 import { CronJob } from 'cron';
 import { broadcastHookMessage } from 'src/lib/utils/broadcast';
@@ -19,8 +19,9 @@ export default class BroadcastManager {
       await this.botManager.manager.broadcastEval(broadcastHookMessage, {
         context: { messageId },
       });
+      this.cancelBroadcast(cronName);
     });
-
+    Logger.log(`Scheduling broadcast for ${cronName}`);
     this.schedule.set(cronName, job);
     job.start();
   }

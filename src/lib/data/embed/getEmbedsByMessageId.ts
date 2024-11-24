@@ -4,7 +4,7 @@ export async function getEmbedsByMessageId(messageId: number) {
   const { data, error } = await supabase
     .from('embeds')
     .select('*')
-    .eq('message', messageId);
+    .eq('message_id', messageId);
 
   if (error) {
     return [];
