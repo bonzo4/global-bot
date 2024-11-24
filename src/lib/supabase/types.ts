@@ -286,6 +286,27 @@ export type Database = {
           },
         ];
       };
+      cron_messages: {
+        Row: {
+          created_at: string;
+          cron_string: string;
+          id: number;
+          title: string;
+        };
+        Insert: {
+          created_at?: string;
+          cron_string: string;
+          id?: number;
+          title: string;
+        };
+        Update: {
+          created_at?: string;
+          cron_string?: string;
+          id?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
       embed_presets: {
         Row: {
           created_at: string;
@@ -311,28 +332,28 @@ export type Database = {
         Row: {
           content: Json;
           created_at: string;
+          has_view_tracker: boolean;
           id: number;
           interaction_types: Database['public']['Enums']['interaction_type'][];
-          message_id: number | null;
-          news_image: boolean;
+          message_id: number;
           order: number;
         };
         Insert: {
           content: Json;
           created_at?: string;
+          has_view_tracker?: boolean;
           id?: number;
           interaction_types?: Database['public']['Enums']['interaction_type'][];
-          message_id?: number | null;
-          news_image?: boolean;
+          message_id: number;
           order?: number;
         };
         Update: {
           content?: Json;
           created_at?: string;
+          has_view_tracker?: boolean;
           id?: number;
           interaction_types?: Database['public']['Enums']['interaction_type'][];
-          message_id?: number | null;
-          news_image?: boolean;
+          message_id?: number;
           order?: number;
         };
         Relationships: [
@@ -997,7 +1018,7 @@ export type Database = {
           guild_id: string;
           id: number;
           message_id: number;
-          poll_choice_id: number;
+          poll_choice_id: number | null;
           poll_id: number;
           user_id: string;
         };
@@ -1006,7 +1027,7 @@ export type Database = {
           guild_id: string;
           id?: number;
           message_id: number;
-          poll_choice_id: number;
+          poll_choice_id?: number | null;
           poll_id: number;
           user_id: string;
         };
@@ -1015,7 +1036,7 @@ export type Database = {
           guild_id?: string;
           id?: number;
           message_id?: number;
-          poll_choice_id?: number;
+          poll_choice_id?: number | null;
           poll_id?: number;
           user_id?: string;
         };
@@ -1029,6 +1050,13 @@ export type Database = {
           },
           {
             foreignKeyName: 'poll_interactions_message_id_fkey';
+            columns: ['message_id'];
+            isOneToOne: false;
+            referencedRelation: 'hook_messages';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'poll_interactions_message_id_fkey1';
             columns: ['message_id'];
             isOneToOne: false;
             referencedRelation: 'scheduled_message';
@@ -1545,20 +1573,23 @@ export type Database = {
       scheduled_message: {
         Row: {
           created_at: string;
+          cron_string: string;
+          event_name: string;
           id: number;
-          scheduled_at: string;
           title: string;
         };
         Insert: {
           created_at?: string;
+          cron_string: string;
+          event_name: string;
           id?: number;
-          scheduled_at: string;
           title: string;
         };
         Update: {
           created_at?: string;
+          cron_string?: string;
+          event_name?: string;
           id?: number;
-          scheduled_at?: string;
           title?: string;
         };
         Relationships: [];

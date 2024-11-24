@@ -1,0 +1,187 @@
+import {
+  ActionRowBuilder,
+  APIEmbed,
+  ButtonBuilder,
+  ChannelType,
+  Client,
+  SnowflakeUtil,
+  TextChannel,
+  WebhookClient,
+} from 'discord.js';
+import ChannelCache from './channelCache';
+import { HookMessage, MessageAccess } from '../types/messages';
+import { EmbedRow } from '../types/embed';
+import { EmbedButton } from '../data/embed/getEmbedInteractions';
+import { getGlobalChannel } from '../data/channels/getGlobalChannel';
+import { EmbedUtils } from './embeds';
+import { deleteGlobalChannel } from '../data/channels/deleteGlobalChannel';
+import RequiredPermissions from './permissions';
+import { getGuild } from '../data/guilds/getGuild';
+import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
+import { pollButtons } from 'src/services/discord/events/interactions/buttons/poll/components';
+
+type DataOptions = {
+  channelId: string;
+  payload: {
+    type: 'hookMessage';
+    data: {
+      message: HookMessage;
+      embeds: EmbedRow[];
+      buttons: EmbedButton[];
+      access: MessageAccess[];
+    };
+  };
+};
+
+type SendContent = {
+  embeds: EmbedRow[];
+  buttons: ActionRowBuilder<ButtonBuilder>[];
+};
+
+export class ScheduledMessageUtils {
+  constructor(
+    private readonly client: Client,
+    private readonly channelCache: ChannelCache,
+    private readonly dataOptions: DataOptions,
+  ) {}
+
+  public async handleChananel(): Promise<void> {
+    const { channelId, payload } = this.dataOptions;
+    const channelData = await getGlobalChannel(channelId);
+    const channel = await this.client.channels.fetch(channelId);
+
+    if (!channelData || !channel || channel.type !== ChannelType.GuildText) {
+      await this.cleanupChannel(channelId);
+      return;
+    }
+
+    const guildData = await getGuild(channelData.guild_id);
+    if (!guildData) return;
+
+    const hasAccess = payload.data.access
+      .map((a) => a.channel_access)
+      .includes(channelData.channel_access);
+
+    if (!hasAccess) return;
+
+    // this isn't right
+    const guildChannelAccess = await getGuildChannelAccess(guildData.id);
+    const hasGuildAccess = guildChannelAccess.some(
+      (access) => access.channel_access === channelData.channel_access,
+    );
+    if (!hasGuildAccess) {
+      await this.sendWarningMessage(
+        channelData.webhook_url,
+        `This channel has lost access to ${channelData.channel_access}.`,
+        channel,
+      );
+      return;
+    }
+
+    if (!this.hasRequiredPermissions(channel)) {
+      await this.sendWarningMessage(
+        channelData.webhook_url,
+        `I don't have the required permissions to send messages in this channel.`,
+        channel,
+      );
+      return;
+    }
+
+    const buttonRows = await this.getButtonRows(payload.data.buttons);
+
+    // send message
+    if (payload.type === 'hookMessage') {
+      await this.sendHookMessage(channelData.webhook_url, {
+        embeds: payload.data.embeds,
+        buttons: buttonRows,
+      });
+    } else {
+      return;
+    }
+  }
+
+  private async cleanupChannel(channelId: string): Promise<void> {
+    this.channelCache.removeGlobalChannel(channelId);
+    await deleteGlobalChannel(channelId);
+  }
+
+  private hasRequiredPermissions(channel: TextChannel): boolean {
+    if (!channel.guild.members.me) return false;
+    const permissions = channel.permissionsFor(channel.guild.members.me);
+    const missingPermissions =
+      permissions?.missing(RequiredPermissions.globalPermissions) || [];
+    return missingPermissions.length === 0;
+  }
+
+  private async sendWarningMessage(
+    webhookUrl: string,
+    warning: string,
+    channel: TextChannel,
+  ): Promise<void> {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const nonce = SnowflakeUtil.generate().toString();
+
+    const lastMessage = channel.messages.cache.last();
+    if (lastMessage && lastMessage.author.username === 'Global Message') {
+      const sameContent =
+        JSON.stringify(lastMessage.embeds[0].toJSON()) ===
+        JSON.stringify(EmbedUtils.Warning(warning).toJSON());
+      if (lastMessage.deletable && !sameContent) {
+        await lastMessage.delete();
+      } else {
+        return;
+      }
+    }
+
+    await globalWebhook.send({
+      embeds: [EmbedUtils.Warning(warning)],
+      username: 'Global Message',
+      avatarURL:
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+
+  private async getButtonRows(
+    buttons: EmbedButton[],
+  ): Promise<ActionRowBuilder<ButtonBuilder>[]> {
+    const buttonRows = buttons.map((button) => {
+      switch (button.type) {
+        case 'poll': {
+          return pollButtons(button.pollChoices, true);
+        }
+        default:
+          return [];
+      }
+    });
+
+    return buttonRows.flat();
+  }
+
+  private async sendHookMessage(
+    webhookUrl: string,
+    payload: SendContent,
+  ): Promise<void> {
+    const globalWebhook = new WebhookClient({ url: webhookUrl });
+
+    const nonce = SnowflakeUtil.generate().toString();
+
+    const embeds = payload.embeds.map((embed) => embed.content) as APIEmbed[];
+
+    await globalWebhook.send({
+      embeds,
+      components: payload.buttons,
+      username: 'NTWRK Global🌐',
+      avatarURL:
+        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+      options: {
+        enforceNonce: true,
+        nonce,
+      },
+    });
+  }
+}

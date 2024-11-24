@@ -8,21 +8,21 @@ import {
   Routes,
   RESTGetAPIApplicationCommandsResult,
   APIApplicationCommand,
-  MessageContextMenuCommandInteraction,
-  UserContextMenuCommandInteraction,
 } from 'discord.js';
 import { EmbedUtils } from 'src/lib/utils/embeds';
-import GlobalChannelCommand from './global-channel';
 import ChannelCache from 'src/lib/utils/channelCache';
 import DisableGlobalChannelCommand from './disable-global-channel';
 import FixGlobalChannelCommand from './fix-global-channel';
-import GlobalAdminCommand from './global-admin';
-import SetGlobalChannelCommand from './set-global-channel';
 import 'dotenv/config';
-import GlobalBan from './global-ban';
 import GlobalBanCommand from './global-ban';
 import ChangeTopicCommand from './change-topic';
 import GlobalTagCommand from './global-tag';
+import GlobalGeneralCommand from './global-general';
+import GlobalWhitelistCommand from './global-whitelist';
+import GlobalSuperteamCommand from './global-superteam';
+import SetGlobalGeneralCommand from './set-global-general';
+import SetGlobalWhitelistCommand from './set-global-whitelist';
+import SetGlobalSuperteamCommand from './set-global-superteam';
 
 require('dotenv').config();
 
@@ -36,12 +36,7 @@ type CommandOptions = {
 export interface CommandHandler {
   name: string;
   commandBuilder: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
-  process(
-    interaction:
-      | ChatInputCommandInteraction<CacheType>
-      | MessageContextMenuCommandInteraction<CacheType>
-      | UserContextMenuCommandInteraction<CacheType>,
-  ): Promise<void>;
+  process(interaction: ChatInputCommandInteraction<CacheType>): Promise<void>;
   options: CommandOptions;
 }
 
@@ -49,12 +44,15 @@ export const generateCommands = (
   channelCache: ChannelCache,
 ): CommandHandler[] => [
   new ChangeTopicCommand(),
-  new GlobalChannelCommand(channelCache),
+  new GlobalGeneralCommand(channelCache),
+  new GlobalWhitelistCommand(channelCache),
+  new GlobalSuperteamCommand(channelCache),
   new GlobalBanCommand(),
   new DisableGlobalChannelCommand(channelCache),
   new FixGlobalChannelCommand(),
-  new GlobalAdminCommand(),
-  new SetGlobalChannelCommand(channelCache),
+  new SetGlobalGeneralCommand(channelCache),
+  new SetGlobalWhitelistCommand(channelCache),
+  new SetGlobalSuperteamCommand(channelCache),
   new GlobalTagCommand(),
 ];
 

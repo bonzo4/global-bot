@@ -9,3 +9,7 @@ export type AiResponseInsert =
   Database['public']['Tables']['ai_responses']['Insert'];
 export type AiResponseUpdate =
   Database['public']['Tables']['ai_responses']['Update'];
+
+export type HookMessage = Database['public']['Tables']['hook_messages']['Row'];
+export type MessageAccess =
+  Database['public']['Tables']['message_access']['Row'];

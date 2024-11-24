@@ -27,6 +27,11 @@ import FlipMessageHandler from './events/flipMessage';
 import GlobalWarningHanlder from './events/globalWarning';
 import { Logger } from '@nestjs/common';
 import StealMessageHandler from './events/stealMessage';
+import ButtonManager from './events/interactions/buttons';
+import { PollButtonHandler } from './events/interactions/buttons/poll';
+import SetGlobalGeneralMessageCommand from './events/messageCreate/messageCommand/set-global-general';
+import SetGlobalSuperteamMessageCommand from './events/messageCreate/messageCommand/set-global-superteam';
+import SetGlobalWhitelistMessageCommand from './events/messageCreate/messageCommand/set-global-whitelist';
 
 export default class Bot {
   constructor() {}
@@ -67,19 +72,22 @@ export default class Bot {
         allowedLinksList.map((link) => link.link),
       );
       const commandManager = new CommandManager(generateCommands(channelCache));
+      const buttonManager = new ButtonManager([new PollButtonHandler()]);
       const messageCommandHandler = new MessageCommandHandler([
         new GmMessageCommand(),
         new FlipMessageCommand(),
         new StealMessageCommand(),
         new AiHelpMessageCommand(),
-        new SetGlobalCommand(channelCache),
+        new SetGlobalGeneralMessageCommand(channelCache),
+        new SetGlobalSuperteamMessageCommand(channelCache),
+        new SetGlobalWhitelistMessageCommand(channelCache),
       ]);
 
       const eventManager = new EventManager(client, [
         new ChannelDeleteHandler(channelCache),
         new GuildJoinHandler(channelCache),
         new GuildLeaveHandler(channelCache),
-        new InteractionHandler(commandManager),
+        new InteractionHandler(commandManager, buttonManager),
         new MessageCreateHandler(
           channelCache,
           allowedLinks,

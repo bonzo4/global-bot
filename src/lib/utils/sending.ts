@@ -152,7 +152,7 @@ export class SendingUtils {
 
     await globalWebhook.send({
       embeds: [EmbedUtils.Warning(warning)],
-      username: 'Global Message',
+      username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
@@ -202,7 +202,7 @@ export class SendingUtils {
 
     await globalWebhook.send({
       content: responseRow.response,
-      username: '🌐Global AI Helper',
+      username: 'Global AI Helper🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
@@ -224,7 +224,7 @@ export class SendingUtils {
 
     await globalWebhook.send({
       embeds: [EmbedUtils.GmMessage(guildRow, userRow, hasGuildIcon)],
-      username: '🌐Syndicate Global',
+      username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
@@ -245,7 +245,7 @@ export class SendingUtils {
 
     const message = await globalWebhook.send({
       embeds: [EmbedUtils.FlipMessage(flip, user)],
-      username: '🌐Syndicate Global',
+      username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
@@ -277,7 +277,7 @@ export class SendingUtils {
 
     const message = await globalWebhook.send({
       embeds: [EmbedUtils.StealMessage(steal, user, target)],
-      username: '🌐Syndicate Global',
+      username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
@@ -303,8 +303,8 @@ export class SendingUtils {
     const nonce = SnowflakeUtil.generate().toString();
 
     await globalWebhook.send({
-      content: warning,
-      username: '🌐Syndicate Global',
+      embeds: [EmbedUtils.Warning(warning)],
+      username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {

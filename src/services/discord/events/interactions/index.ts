@@ -1,4 +1,5 @@
 import {
+  ButtonInteraction,
   CacheType,
   ChatInputCommandInteraction,
   ClientEvents,
@@ -10,11 +11,15 @@ import {
 import { EventHandler } from '..';
 import CommandManager from './commands';
 import { EmbedUtils } from 'src/lib/utils/embeds';
+import ButtonManager from './buttons';
 
 export default class InteractionHandler implements EventHandler {
   eventName: keyof ClientEvents = 'interactionCreate';
 
-  constructor(private readonly commandManager: CommandManager) {}
+  constructor(
+    private readonly commandManager: CommandManager,
+    private readonly buttonManager: ButtonManager,
+  ) {}
 
   // Using an arrow function to maintain `this` context
   process = async (interaction: Interaction): Promise<void> => {
@@ -22,8 +27,14 @@ export default class InteractionHandler implements EventHandler {
       if (interaction instanceof ChatInputCommandInteraction) {
         return await this.handleCommand(interaction);
       }
+      if (interaction instanceof ButtonInteraction) {
+        return await this.handleButton(interaction);
+      }
     } catch (error) {
-      if (interaction instanceof ChatInputCommandInteraction) {
+      if (
+        interaction instanceof ChatInputCommandInteraction ||
+        interaction instanceof ButtonInteraction
+      ) {
         if (interaction.deferred) {
           await interaction.followUp({
             embeds: [
@@ -54,6 +65,17 @@ export default class InteractionHandler implements EventHandler {
         command.process,
         interaction,
         command.options,
+      );
+    }
+  }
+
+  private async handleButton(interaction: ButtonInteraction) {
+    const button = this.buttonManager.getButton(interaction.customId);
+    if (button) {
+      this.buttonManager.executeButton(
+        button.process,
+        interaction,
+        button.options,
       );
     }
   }

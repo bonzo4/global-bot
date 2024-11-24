@@ -12,6 +12,7 @@ import { updateMessage } from 'src/lib/data/messages/updateMessage';
 import AllowedLinks from 'src/lib/utils/allowedLinks';
 import { EventHandler } from '..';
 import MessageCommandHandler from './messageCommand';
+import { fetchUser } from 'src/lib/data/users/fetchUser';
 
 export default class MessageCreateHandler implements EventHandler {
   eventName: keyof ClientEvents = 'messageCreate';
@@ -30,7 +31,7 @@ export default class MessageCreateHandler implements EventHandler {
 
     const channel = await message.channel.fetch();
     if (channel.type !== ChannelType.GuildText) return;
-    if (message.content.startsWith('!set-global-channel')) {
+    if (message.content.startsWith('!set-global')) {
       const command = this.messageCommandHandler.getCommand(message.content);
       if (command) {
         await command.process(message);
@@ -61,7 +62,7 @@ export default class MessageCreateHandler implements EventHandler {
     );
     if (!hasWebhook) return;
 
-    const userRow = await this.fetchUser(message);
+    const userRow = await fetchUser(message.author);
 
     await insertMessage({
       id: message.id,
@@ -117,28 +118,6 @@ export default class MessageCreateHandler implements EventHandler {
       await command.process(message, guildRow, userRow);
     }
   };
-
-  private async fetchUser(message: Message) {
-    let user = await getUser(message.author.id);
-    if (!user) {
-      user = await insertUser({
-        id: message.author.id,
-        username: message.author.username,
-        avatar_url: message.author.avatarURL(),
-      });
-    } else {
-      if (
-        user.username !== message.author.username ||
-        user.avatar_url !== message.author.avatarURL()
-      ) {
-        user = await updateUser(message.author.id, {
-          username: message.author.username,
-          avatar_url: message.author.avatarURL(),
-        });
-      }
-    }
-    return user;
-  }
 }
 
 export function broadcastGlobalMessage(
