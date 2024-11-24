@@ -1,12 +1,8 @@
-import { Injectable, Logger, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 import {
-  Client,
-  Collection,
   REST,
   RESTGetCurrentApplicationResult,
   Routes,
-  Shard,
   ShardingManager,
 } from 'discord.js';
 
@@ -46,12 +42,5 @@ export default class BotManager {
     }
 
     return serverCount;
-  }
-
-  public broadcastAPI() {
-    this.manager.broadcastEval((client) => {
-      Logger.log('Broadcasting API event', client.user?.username);
-      client.emit('broadcastAPI', { message: 'Hello from API' });
-    });
   }
 }

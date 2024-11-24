@@ -19,7 +19,7 @@ export default class BroadcastManager {
       await this.botManager.manager.broadcastEval(broadcastHookMessage, {
         context: { messageId },
       });
-      this.cancelBroadcast(cronName);
+      if (cronString instanceof Date) this.cancelBroadcast(cronName);
     });
     Logger.log(`Scheduling broadcast for ${cronName}`);
     this.schedule.set(cronName, job);
