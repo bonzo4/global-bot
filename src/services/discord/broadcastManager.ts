@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import BotManager from './manager';
 import { CronJob } from 'cron';
+import { broadcastHookMessage } from 'src/lib/utils/broadcast';
 
 @Injectable()
 export default class BroadcastManager {
@@ -9,15 +10,14 @@ export default class BroadcastManager {
     private readonly schedule: Map<string, CronJob>,
   ) {}
 
-  public async scheduleBroadcast(
+  public async scheduleHook(
     cronName: string,
     cronString: string | Date,
-    eventName: string,
-    ...args: any[]
+    messageId: number,
   ) {
     const job = new CronJob(cronString, async () => {
-      await this.botManager.manager.broadcastEval((client) => {
-        client.emit(eventName, ...args);
+      await this.botManager.manager.broadcastEval(broadcastHookMessage, {
+        context: { messageId },
       });
     });
 

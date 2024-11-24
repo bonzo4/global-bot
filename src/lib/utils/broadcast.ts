@@ -10,3 +10,10 @@ export function broadcastWarning(
 ) {
   client.emit('globalWarning', { warning, userId, sourceChannelId });
 }
+
+export function broadcastHookMessage(
+  client: Client,
+  { messageId }: { messageId: number },
+) {
+  client.emit('hookMessage', { messageId });
+}

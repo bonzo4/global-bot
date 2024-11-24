@@ -30,11 +30,10 @@ export class HookController {
       throw new HttpException('Hook message not found', HttpStatus.NOT_FOUND);
     }
 
-    await this.broadcastManager.scheduleBroadcast(
+    await this.broadcastManager.scheduleHook(
       hookMessage.title,
       new Date(hookMessage.schedule),
-      'hookMessage',
-      { hookId: hookMessage.id },
+      hookMessage.id,
     );
 
     return { message: 'Hook Message scheduled' };
