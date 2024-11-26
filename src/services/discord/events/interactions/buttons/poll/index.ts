@@ -96,9 +96,9 @@ export default class PollButtonHandler implements ButtonHandler {
       }\n\n${this.formateResults(
         pollChoices,
         pollChoices.find(
-          (choice) => choice.id === pollInteraction.poll_choice_id,
+          (choice) => choice.id === pollInteractionChoice.poll_choice_id,
         ),
-      )}\n\n+100`;
+      )}`;
 
       await interaction.followUp({
         embeds: [EmbedUtils.Success(resultsMessage)],
@@ -108,6 +108,8 @@ export default class PollButtonHandler implements ButtonHandler {
     }
 
     const choice = await getPollChoice(parseInt(choiceId, 10));
+
+    console.log(choice);
 
     if (!choice) {
       await interaction.followUp({

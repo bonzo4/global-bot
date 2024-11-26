@@ -96,7 +96,7 @@ export default class QuizButtonHandler implements ButtonHandler {
       }\n\n${this.formateResults(
         quizChoices,
         quizChoices.find(
-          (choice) => choice.id === quizInteraction.quiz_choice_id,
+          (choice) => choice.id === quizInteractionChoice.quiz_choice_id,
         ),
       )}\n\n⭐┃Answer: ${quiz.answer}`;
 
