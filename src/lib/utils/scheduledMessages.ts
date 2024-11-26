@@ -23,6 +23,7 @@ import { Json } from '../supabase/types';
 import { quizButtons } from 'src/services/discord/events/interactions/buttons/quizzes/components';
 import { inputButton } from 'src/services/discord/events/interactions/buttons/input/components';
 import { linkButton } from 'src/services/discord/events/interactions/buttons/link/components';
+import { insertError } from '../data/errors/insertError';
 
 type DataOptions = {
   channelId: string;
@@ -85,13 +86,21 @@ export class ScheduledMessageUtils {
       return;
     }
 
-    // send message
-    if (payload.type === 'hookMessage') {
-      for (const embed of payload.data.embeds) {
-        await this.sendHookMessage(channelData.webhook_url, embed);
+    try {
+      // send message
+      if (payload.type === 'hookMessage') {
+        for (const embed of payload.data.embeds) {
+          await this.sendHookMessage(channelData.webhook_url, embed);
+        }
+      } else {
+        return;
       }
-    } else {
-      return;
+    } catch (err) {
+      await insertError({
+        error: err.message,
+        guild_id: guildData.id,
+      });
+      throw err;
     }
   }
 

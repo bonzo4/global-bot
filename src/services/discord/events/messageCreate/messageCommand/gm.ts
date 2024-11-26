@@ -26,11 +26,13 @@ export default class GmMessageCommand implements MessageCommand {
       gameStats = await insertGameStats({ user_id: userRow.id });
     }
 
+    let claimedPoints = false;
     if (!gameStats.has_claimed) {
       gameStats = await updateGameStats(userRow.id, {
         has_claimed: true,
         total_points: gameStats.total_points + 100,
       });
+      claimedPoints = true;
     }
 
     const guildIconUrl = message.guild.iconURL({ extension: 'png' });
@@ -43,6 +45,7 @@ export default class GmMessageCommand implements MessageCommand {
         context: {
           userId: userRow.id,
           sourceChannelId: message.channel.id,
+          claimedPoints,
         },
       });
       return;
@@ -85,6 +88,7 @@ export default class GmMessageCommand implements MessageCommand {
       context: {
         userId: userRow.id,
         sourceChannelId: message.channel.id,
+        claimedPoints,
       },
     });
   };
@@ -92,7 +96,10 @@ export default class GmMessageCommand implements MessageCommand {
 
 export function broadcastGM(
   client: Client,
-  { userId, sourceChannelId }: { userId: string; sourceChannelId: string },
+  {
+    userId,
+    sourceChannelId,
+  }: { userId: string; sourceChannelId: string; claimedPoints: boolean },
 ) {
-  client.emit('gmMessage', { userId, sourceChannelId });
+  client.emit('gmMessage', { userId, sourceChannelId, claimedPoints: true });
 }

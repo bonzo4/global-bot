@@ -17,10 +17,11 @@ export default class GmMessageHandler implements EventHandler {
   process = async ({
     userId,
     sourceChannelId,
+    claimedPoints,
   }: {
     userId: string;
     sourceChannelId: string;
-    hasGuildIcon: boolean;
+    claimedPoints: boolean;
   }): Promise<void> => {
     const sourceChannel = await getGlobalChannel(sourceChannelId);
     if (!sourceChannel) return;
@@ -36,7 +37,7 @@ export default class GmMessageHandler implements EventHandler {
         sourceChannel,
         payload: {
           type: 'gmMessage',
-          data: null,
+          data: { claimedPoints },
         },
       });
       await sendingUtils.handleChannel().catch((err) => {

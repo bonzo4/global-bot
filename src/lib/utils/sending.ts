@@ -19,6 +19,7 @@ import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
 import { GuildRow } from '../types/guilds';
 import { FlipRow, StealRow } from '../types/game';
 import { Logger } from '@nestjs/common';
+import { insertError } from '../data/errors/insertError';
 
 type DataOptions = {
   channelId: string;
@@ -27,7 +28,7 @@ type DataOptions = {
   payload:
     | { type: 'message'; data: MessageRow }
     | { type: 'aiResponse'; data: AiResponseRow }
-    | { type: 'gmMessage'; data: null }
+    | { type: 'gmMessage'; data: { claimedPoints: boolean } }
     | { type: 'flip'; data: FlipRow }
     | { type: 'steal'; data: { steal: StealRow; target: UserRow } }
     | { type: 'warning'; data: string };
@@ -78,40 +79,48 @@ export class SendingUtils {
       );
       return;
     }
-
-    if (payload.type === 'message') {
-      await this.sendGlobalMessage(
-        channelData.webhook_url,
-        payload.data,
-        userRow,
-        guildData,
-      );
-    } else if (payload.type === 'gmMessage') {
-      await this.sendGMMessage(
-        channelData.webhook_url,
-        userRow,
-        guildData,
-        guildData.gm_url !== null,
-      );
-    } else if (payload.type === 'aiResponse') {
-      await this.sendAiMessage(channelData.webhook_url, payload.data);
-    } else if (payload.type === 'flip') {
-      await this.sendFlipMessage(
-        channelData.webhook_url,
-        payload.data,
-        userRow,
-      );
-    } else if (payload.type === 'warning') {
-      await this.sendWarning(channelData.webhook_url, payload.data);
-    } else if (payload.type === 'steal') {
-      await this.sendStealMessage(
-        channelData.webhook_url,
-        payload.data.steal,
-        userRow,
-        payload.data.target,
-      );
-    } else {
-      throw new Error('Invalid payload type');
+    try {
+      if (payload.type === 'message') {
+        await this.sendGlobalMessage(
+          channelData.webhook_url,
+          payload.data,
+          userRow,
+          guildData,
+        );
+      } else if (payload.type === 'gmMessage') {
+        await this.sendGMMessage(
+          channelData.webhook_url,
+          userRow,
+          guildData,
+          payload.data.claimedPoints,
+        );
+      } else if (payload.type === 'aiResponse') {
+        await this.sendAiMessage(channelData.webhook_url, payload.data);
+      } else if (payload.type === 'flip') {
+        await this.sendFlipMessage(
+          channelData.webhook_url,
+          payload.data,
+          userRow,
+        );
+      } else if (payload.type === 'warning') {
+        await this.sendWarning(channelData.webhook_url, payload.data);
+      } else if (payload.type === 'steal') {
+        await this.sendStealMessage(
+          channelData.webhook_url,
+          payload.data.steal,
+          userRow,
+          payload.data.target,
+        );
+      } else {
+        throw new Error('Invalid payload type');
+      }
+    } catch (err) {
+      await insertError({
+        error: err.message,
+        guild_id: guildData.id,
+        user_id: userRow.id,
+      });
+      throw err;
     }
   }
 
@@ -215,14 +224,14 @@ export class SendingUtils {
     webhookUrl: string,
     userRow: UserRow,
     guildRow: GuildRow,
-    hasGuildIcon: boolean,
+    claimedPoints: boolean,
   ) {
     const globalWebhook = new WebhookClient({ url: webhookUrl });
 
     const nonce = SnowflakeUtil.generate().toString();
 
     await globalWebhook.send({
-      embeds: [EmbedUtils.GmMessage(guildRow, userRow, hasGuildIcon)],
+      embeds: [EmbedUtils.GmMessage(guildRow, userRow, claimedPoints)],
       username: 'NTWRK Global🌐',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',

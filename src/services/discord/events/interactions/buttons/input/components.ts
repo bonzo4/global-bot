@@ -5,7 +5,8 @@ export function inputButton(input: InputRow) {
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`input_${input.id}`)
-      .setLabel('Answer')
+      .setEmoji('📝')
+      .setLabel('Enter')
       .setStyle(ButtonStyle.Primary),
   );
 

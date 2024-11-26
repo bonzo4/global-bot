@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { Client, ClientEvents } from 'discord.js';
+import { Client, ClientEvents, Message } from 'discord.js';
+import { insertError } from 'src/lib/data/errors/insertError';
 
 export interface EventHandler {
   eventName: keyof ClientEvents | string;
@@ -27,6 +28,23 @@ export default class EventManager {
     try {
       await process(...args);
     } catch (error) {
+      const eventData = args[0];
+      let guildId: string | null = null;
+      let userId: string | null = null;
+      if (eventData instanceof Message) {
+        guildId = eventData.guild ? eventData.guild.id : null;
+        userId = eventData.author.id;
+      }
+      if (eventData.guild && eventData.user) {
+        guildId = eventData.guild.id;
+        userId = eventData.user.id;
+      }
+
+      await insertError({
+        error: error.message,
+        guild_id: guildId,
+        user_id: userId,
+      });
       Logger.error(error);
     }
   }

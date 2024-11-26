@@ -36,13 +36,15 @@ export class EmbedUtils {
   public static GmMessage(
     guildRow: GuildRow,
     userRow: UserRow,
-    hasGuildIcon: boolean,
+    claimedPoints: boolean,
   ): EmbedBuilder {
     return new EmbedBuilder()
       .setTitle(':sunny: **GM**')
-      .setDescription(`${userRow.username} says GM from ${guildRow.name}`)
+      .setDescription(
+        `${userRow.username} says GM from ${guildRow.name}${claimedPoints ? '\n\nYou have claimed your points for today!' : ''}`,
+      )
       .setThumbnail(
-        hasGuildIcon
+        guildRow.gm_url
           ? guildRow.gm_url
           : 'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/Bot%20Images/GM_overlay_no_logo.png',
       );
