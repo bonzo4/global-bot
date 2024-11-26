@@ -31,7 +31,7 @@ export default class HookMessageHandler implements EventHandler {
     const embedsWithButtons = await Promise.all(
       embeds.map(async (embed) => {
         const buttons = await getEmbedButtons(embed);
-        return { embed, buttons };
+        return { embed, buttons: buttons.sort((a, b) => a.order - b.order) };
       }),
     );
 
@@ -39,8 +39,12 @@ export default class HookMessageHandler implements EventHandler {
     let currentGroup: EmbedRow[] = []; // Correctly typed to store EmbedRow items
     let currentButtons: EmbedButton[] = []; // Correctly initialize an empty button array
 
+    const orderedEmbeds = embedsWithButtons.sort(
+      (a, b) => a.embed.order - b.embed.order,
+    );
+
     // Iterate through each embed item in embedsWithButtons
-    for (const { embed, buttons } of embedsWithButtons) {
+    for (const { embed, buttons } of orderedEmbeds) {
       // Add the current embed to the current group
       currentGroup.push(embed);
 

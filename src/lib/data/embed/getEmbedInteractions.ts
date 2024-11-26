@@ -14,18 +14,22 @@ export type EmbedButton =
   | {
       type: 'poll';
       data: { poll: Poll; pollChoices: PollChoice[] };
+      order: number;
     }
   | {
       type: 'quiz';
       data: { quiz: Quiz; quizChoices: QuizChoice[] };
+      order: number;
     }
   | {
       type: 'input';
       data: { input: InputRow };
+      order: number;
     }
   | {
       type: 'link';
       data: { link: LinkRow };
+      order: number;
     };
 
 export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
@@ -43,6 +47,7 @@ export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
           return polls.map(({ poll, pollChoices }) => ({
             type: 'poll' as const,
             data: { poll, pollChoices },
+            order: poll.order,
           }));
         }
         case 'QUIZ': {
@@ -56,6 +61,7 @@ export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
           return quizzes.map(({ quiz, quizChoices }) => ({
             type: 'quiz' as const,
             data: { quiz, quizChoices },
+            order: quiz.order,
           }));
         }
         case 'INPUT': {
@@ -63,6 +69,7 @@ export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
           const inputs = inputRows.map((input) => ({
             type: 'input' as const,
             data: { input },
+            order: input.order,
           }));
           return inputs;
         }
@@ -71,6 +78,7 @@ export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
           const links = linkRows.map((link) => ({
             type: 'link' as const,
             data: { link },
+            order: link.order,
           }));
 
           return links;
@@ -80,5 +88,5 @@ export async function getEmbedButtons(embed: EmbedRow): Promise<EmbedButton[]> {
       }
     }),
   );
-  return buttons.flat();
+  return buttons.flat().sort((a, b) => a.order - b.order);
 }
