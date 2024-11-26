@@ -1,7 +1,10 @@
 import { PermissionFlagsBits } from 'discord.js';
 
 export default class RequiredPermissions {
-  public static minimumPermissions = [PermissionFlagsBits.ViewChannel];
+  public static minimumPermissions = [
+    PermissionFlagsBits.ViewChannel,
+    PermissionFlagsBits.ReadMessageHistory,
+  ];
 
   public static globalPermissions = [
     PermissionFlagsBits.ManageChannels,

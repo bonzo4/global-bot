@@ -107,7 +107,7 @@ export class ScheduledMessageUtils {
     if (!channel.guild.members.me) return false;
     const permissions = channel.permissionsFor(channel.guild.members.me);
     const missingPermissions =
-      permissions?.missing(RequiredPermissions.globalPermissions) || [];
+      permissions?.missing(RequiredPermissions.minimumPermissions) || [];
     return missingPermissions.length === 0;
   }
 

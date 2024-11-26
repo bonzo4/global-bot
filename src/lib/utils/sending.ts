@@ -29,7 +29,6 @@ type DataOptions = {
     | { type: 'aiResponse'; data: AiResponseRow }
     | { type: 'gmMessage'; data: null }
     | { type: 'flip'; data: FlipRow }
-    | { type: 'flipWarning'; data: string }
     | { type: 'steal'; data: { steal: StealRow; target: UserRow } }
     | { type: 'warning'; data: string };
 };
@@ -125,7 +124,7 @@ export class SendingUtils {
     if (!channel.guild.members.me) return false;
     const permissions = channel.permissionsFor(channel.guild.members.me);
     const missingPermissions =
-      permissions?.missing(RequiredPermissions.globalPermissions) || [];
+      permissions?.missing(RequiredPermissions.minimumPermissions) || [];
     return missingPermissions.length === 0;
   }
 
