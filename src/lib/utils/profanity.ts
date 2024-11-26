@@ -41,7 +41,7 @@ export function wrapProfanities(input: string): string {
 
 export function getAllLinks(text: string) {
   // Regular expression to match URLs
-  const urlRegex = /(https?:\/\/[^\s]+?)/g;
+  const urlRegex = /(https?:\/\/[^\s.,!?]+?)/g;
 
   // Match URLs in the text and count them
   const matches = text.match(urlRegex);

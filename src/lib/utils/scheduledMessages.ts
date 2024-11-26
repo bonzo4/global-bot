@@ -36,11 +36,6 @@ type DataOptions = {
   };
 };
 
-type SendContent = {
-  embeds: EmbedRow[];
-  buttons: ActionRowBuilder<ButtonBuilder>[];
-};
-
 export class ScheduledMessageUtils {
   constructor(
     private readonly client: Client,
@@ -93,7 +88,6 @@ export class ScheduledMessageUtils {
     // send message
     if (payload.type === 'hookMessage') {
       for (const embed of payload.data.embeds) {
-        const buttonRows = await this.getButtonRows(embed.buttons);
         await this.sendHookMessage(channelData.webhook_url, embed);
       }
     } else {

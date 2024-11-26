@@ -98,6 +98,9 @@ export default class MessageCreateHandler implements EventHandler {
       this.allowedLinks.isAllowedLink(link),
     );
 
+    console.log('Links from message:', links);
+    console.log('Has only allowed links:', hasOnlyAllowedLinks);
+
     if (!hasOnlyAllowedLinks) {
       await message.delete();
       await updateMessage(message.id, {

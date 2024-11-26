@@ -41,22 +41,31 @@ export default class HookMessageHandler implements EventHandler {
     let currentButtons: EmbedButton[] = [];
 
     for (const { embed, buttons } of embedWithButtons) {
-      if (buttons.length > 0 || currentGroup.length === 5) {
+      // If the current embed has buttons or the group has reached 5 embeds,
+      // finalize the current group
+      if (currentGroup.length === 5 || buttons.length > 0) {
+        // Push current group to the result if it's not empty
         if (currentGroup.length > 0) {
           embedsWithButtons.push({
             embed: currentGroup,
             buttons: currentButtons,
           });
-          currentGroup = [];
-          currentButtons = [];
         }
+        // Start a new group with the current embed
+        currentGroup = [embed];
+        currentButtons = buttons;
+      } else {
+        // Add embed to the current group if no new group needs to be started
+        currentGroup.push(embed);
       }
-      currentGroup.push(embed);
-      currentButtons = buttons;
     }
 
+    // After looping, if there's a remaining group, add it to the result
     if (currentGroup.length > 0) {
-      embedsWithButtons.push({ embed: currentGroup, buttons: currentButtons });
+      embedsWithButtons.push({
+        embed: currentGroup,
+        buttons: currentButtons,
+      });
     }
 
     const access = await getMessageAccess(hookMessage.id);

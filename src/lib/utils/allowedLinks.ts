@@ -2,9 +2,15 @@ export default class AllowedLinks {
   constructor(private readonly allowedLinks: string[]) {}
 
   public isAllowedLink(link: string): boolean {
-    return this.allowedLinks.some((allowedLink) =>
-      link.startsWith(allowedLink),
-    );
+    try {
+      const normalizedLink = new URL(link).origin;
+      return this.allowedLinks.some((allowedLink) =>
+        normalizedLink.startsWith(new URL(allowedLink).origin),
+      );
+    } catch (e) {
+      // Handle any invalid URL parsing errors
+      return false;
+    }
   }
 
   public addAllowedLink(link: string): void {
