@@ -1339,7 +1339,7 @@ export type Database = {
           guild_id: string;
           id: number;
           message_id: number;
-          quiz_choice_id: number;
+          quiz_choice_id: number | null;
           quiz_id: number;
           user_id: string;
         };
@@ -1348,7 +1348,7 @@ export type Database = {
           guild_id: string;
           id?: number;
           message_id: number;
-          quiz_choice_id: number;
+          quiz_choice_id?: number | null;
           quiz_id: number;
           user_id: string;
         };
@@ -1357,7 +1357,7 @@ export type Database = {
           guild_id?: string;
           id?: number;
           message_id?: number;
-          quiz_choice_id?: number;
+          quiz_choice_id?: number | null;
           quiz_id?: number;
           user_id?: string;
         };

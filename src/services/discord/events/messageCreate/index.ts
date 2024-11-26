@@ -52,7 +52,7 @@ export default class MessageCreateHandler implements EventHandler {
     if (!guild.members.me) return;
     const permissions = channel.permissionsFor(guild.members.me);
     const missingPermissions = permissions.missing(
-      RequiredPermissions.globalPermissions,
+      RequiredPermissions.minimumPermissions,
     );
     if (missingPermissions.length) return;
 

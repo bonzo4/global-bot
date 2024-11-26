@@ -4,14 +4,13 @@ import {
   ChatInputCommandInteraction,
   ClientEvents,
   Interaction,
-  InteractionType,
-  MessageContextMenuCommandInteraction,
-  UserContextMenuCommandInteraction,
+  ModalSubmitInteraction,
 } from 'discord.js';
 import { EventHandler } from '..';
 import CommandManager from './commands';
 import { EmbedUtils } from 'src/lib/utils/embeds';
 import ButtonManager from './buttons';
+import ModalManager from './modals';
 
 export default class InteractionHandler implements EventHandler {
   eventName: keyof ClientEvents = 'interactionCreate';
@@ -19,6 +18,7 @@ export default class InteractionHandler implements EventHandler {
   constructor(
     private readonly commandManager: CommandManager,
     private readonly buttonManager: ButtonManager,
+    private readonly modalManager: ModalManager,
   ) {}
 
   // Using an arrow function to maintain `this` context
@@ -29,6 +29,9 @@ export default class InteractionHandler implements EventHandler {
       }
       if (interaction instanceof ButtonInteraction) {
         return await this.handleButton(interaction);
+      }
+      if (interaction instanceof ModalSubmitInteraction) {
+        return await this.handleModal(interaction);
       }
     } catch (error) {
       if (
@@ -77,6 +80,13 @@ export default class InteractionHandler implements EventHandler {
         interaction,
         button.options,
       );
+    }
+  }
+
+  private async handleModal(interaction: ModalSubmitInteraction) {
+    const modal = this.modalManager.getModal(interaction.customId);
+    if (modal) {
+      this.modalManager.executeModal(modal.process, interaction, modal.options);
     }
   }
 }

@@ -20,6 +20,9 @@ import { getGuild } from '../data/guilds/getGuild';
 import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
 import { pollButtons } from 'src/services/discord/events/interactions/buttons/poll/components';
 import { Json } from '../supabase/types';
+import { quizButtons } from 'src/services/discord/events/interactions/buttons/quizzes/components';
+import { inputButton } from 'src/services/discord/events/interactions/buttons/input/components';
+import { linkButton } from 'src/services/discord/events/interactions/buttons/link/components';
 
 type DataOptions = {
   channelId: string;
@@ -154,6 +157,18 @@ export class ScheduledMessageUtils {
             button.data.pollChoices,
             button.data.poll.is_random,
           );
+        }
+        case 'quiz': {
+          return quizButtons(
+            button.data.quizChoices,
+            button.data.quiz.is_random,
+          );
+        }
+        case 'input': {
+          return inputButton(button.data.input);
+        }
+        case 'link': {
+          return linkButton(button.data.link);
         }
         default:
           return [];

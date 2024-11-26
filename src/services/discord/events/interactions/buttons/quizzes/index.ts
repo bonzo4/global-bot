@@ -1,67 +1,67 @@
 import { ButtonInteraction } from 'discord.js';
 import { ButtonHandler } from '..';
-import { getPoll } from 'src/lib/data/poll/getPoll';
+import { getQuiz } from 'src/lib/data/quiz/getQuiz';
 import { getEmbed } from 'src/lib/data/embed/getEmbed';
-import { getPollInteractions } from 'src/lib/data/poll/getPollInteraction';
-import { insertPollInteraction } from 'src/lib/data/poll/insertPollInteraction';
-import { getPollChoices } from 'src/lib/data/poll/getPollChoices';
-import { PollChoice } from 'src/lib/types/poll';
+import { QuizChoice } from 'src/lib/types/quiz';
 import { EmbedUtils } from 'src/lib/utils/embeds';
-import { getPollChoice } from 'src/lib/data/poll/getPollChoice';
 import { getGameStats } from 'src/lib/data/game/getGameStats';
 import { fetchUser } from 'src/lib/data/users/fetchUser';
+import { getQuizChoices } from 'src/lib/data/quiz/getQuizChoices';
+import { getQuizInteractions } from 'src/lib/data/quiz/getPollInteraction';
+import { insertQuizInteraction } from 'src/lib/data/quiz/insertQuizInteraction';
+import { getQuizChoice } from 'src/lib/data/quiz/getQuizChoice';
 import { insertGameStats } from 'src/lib/data/game/insertGameStats';
 
-export default class PollButtonHandler implements ButtonHandler {
-  customId = 'poll';
+export default class QuizButtonHandler implements ButtonHandler {
+  customId = 'quiz';
   options = {
     deferReply: true,
   };
 
   process = async (interaction: ButtonInteraction<'cached'>): Promise<void> => {
     await fetchUser(interaction.user);
-    const [, pollId, choiceId] = interaction.customId.split('_');
-    const poll = await getPoll(parseInt(pollId, 10));
+    const [, quizId, choiceId] = interaction.customId.split('_');
+    const quiz = await getQuiz(parseInt(quizId, 10));
 
-    if (!poll) {
+    if (!quiz) {
       await interaction.followUp({
-        embeds: [EmbedUtils.Warning('Poll not found')],
+        embeds: [EmbedUtils.Warning('Quiz not found')],
         ephemeral: true,
       });
       return;
     }
-    const embed = await getEmbed(poll.embed_id);
+    const embed = await getEmbed(quiz.embed_id);
     if (!embed) {
       await interaction.followUp({
-        embeds: [EmbedUtils.Warning('Poll not found')],
+        embeds: [EmbedUtils.Warning('Quiz not found')],
         ephemeral: true,
       });
       return;
     }
 
-    const pollChoices = await getPollChoices(poll.id);
-    const pollInteractions = await getPollInteractions(
-      poll.id,
+    const quizChoices = await getQuizChoices(quiz.id);
+    const quizInteractions = await getQuizInteractions(
+      quiz.id,
       interaction.user.id,
     );
 
-    const pollInteractionChoice = pollInteractions
-      .filter((interaction) => interaction.poll_choice_id !== null)
+    const quizInteractionChoice = quizInteractions
+      .filter((interaction) => interaction.quiz_choice_id !== null)
       .at(0);
 
     if (choiceId === 'results') {
-      if (!pollInteractionChoice) {
+      if (!quizInteractionChoice) {
         const embeds = interaction.message.embeds;
         const components = interaction.message.components;
-        await insertPollInteraction({
+        await insertQuizInteraction({
           user_id: interaction.user.id,
           message_id: embed.message_id,
-          poll_id: poll.id,
+          quiz_id: quiz.id,
           guild_id: interaction.guild.id,
         });
 
         await interaction.followUp({
-          content: '⚠┃You have not voted yet.',
+          content: '⚠┃You have not answered yet.',
           embeds: embeds,
           components: components,
           ephemeral: true,
@@ -70,17 +70,17 @@ export default class PollButtonHandler implements ButtonHandler {
       }
 
       const resultsMessage = `📊┃**Results**\n\n❓┃*Question*: ${
-        poll.question
+        quiz.question
       }\n\n${this.formateResults(
-        pollChoices,
-        pollChoices.find(
-          (choice) => choice.id === pollInteractionChoice.poll_choice_id,
+        quizChoices,
+        quizChoices.find(
+          (choice) => choice.id === quizInteractionChoice.quiz_choice_id,
         ),
-      )}`;
-      await insertPollInteraction({
+      )}\n\n⭐┃Answer: ${quiz.answer}`;
+      await insertQuizInteraction({
         user_id: interaction.user.id,
         message_id: embed.message_id,
-        poll_id: poll.id,
+        quiz_id: quiz.id,
         guild_id: interaction.guild.id,
       });
       await interaction.followUp({
@@ -90,15 +90,15 @@ export default class PollButtonHandler implements ButtonHandler {
       return;
     }
 
-    if (pollInteractionChoice) {
-      const resultsMessage = `You already voted.\n\n📊┃**Results**\n\n❓┃*Question*: ${
-        poll.question
+    if (quizInteractionChoice) {
+      const resultsMessage = `You already answered.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+        quiz.question
       }\n\n${this.formateResults(
-        pollChoices,
-        pollChoices.find(
-          (choice) => choice.id === pollInteraction.poll_choice_id,
+        quizChoices,
+        quizChoices.find(
+          (choice) => choice.id === quizInteraction.quiz_choice_id,
         ),
-      )}\n\n+100`;
+      )}\n\n⭐┃Answer: ${quiz.answer}`;
 
       await interaction.followUp({
         embeds: [EmbedUtils.Success(resultsMessage)],
@@ -107,7 +107,7 @@ export default class PollButtonHandler implements ButtonHandler {
       return;
     }
 
-    const choice = await getPollChoice(parseInt(choiceId, 10));
+    const choice = await getQuizChoice(parseInt(choiceId, 10));
 
     if (!choice) {
       await interaction.followUp({
@@ -123,21 +123,21 @@ export default class PollButtonHandler implements ButtonHandler {
       gameStats = await insertGameStats({ user_id: interaction.user.id });
     }
 
-    const pollInteraction = await insertPollInteraction({
+    const quizInteraction = await insertQuizInteraction({
       user_id: interaction.user.id,
       message_id: embed.message_id,
-      poll_id: parseInt(pollId, 10),
-      poll_choice_id: parseInt(choiceId, 10),
+      quiz_id: parseInt(quizId, 10),
+      quiz_choice_id: parseInt(choiceId, 10),
       guild_id: interaction.guild.id,
     });
 
     const resultsMessage = `Thank you for voting.\n\n📊┃**Results**\n\n❓┃*Question*: ${
-      poll.question
+      quiz.question
     }\n\n${this.formateResults(
-      pollChoices,
-      pollChoices.find((choice) => choice.id === parseInt(choiceId, 10)),
+      quizChoices,
+      quizChoices.find((choice) => choice.id === parseInt(choiceId, 10)),
       true,
-    )}\n\n+100`;
+    )}\n\n⭐┃Answer: ${quiz.answer}\n\n+100`;
 
     await interaction.followUp({
       embeds: [EmbedUtils.Success(resultsMessage)],
@@ -146,8 +146,8 @@ export default class PollButtonHandler implements ButtonHandler {
   };
 
   private formateResults(
-    results: PollChoice[],
-    vote?: PollChoice,
+    results: QuizChoice[],
+    vote?: QuizChoice,
     justVoted?: boolean,
   ): string {
     const totalVotes = results.reduce(

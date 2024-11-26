@@ -28,11 +28,15 @@ import GlobalWarningHanlder from './events/globalWarning';
 import { Logger } from '@nestjs/common';
 import StealMessageHandler from './events/stealMessage';
 import ButtonManager from './events/interactions/buttons';
-import { PollButtonHandler } from './events/interactions/buttons/poll';
 import SetGlobalGeneralMessageCommand from './events/messageCreate/messageCommand/set-global-general';
 import SetGlobalSuperteamMessageCommand from './events/messageCreate/messageCommand/set-global-superteam';
 import SetGlobalWhitelistMessageCommand from './events/messageCreate/messageCommand/set-global-whitelist';
 import HookMessageHandler from './events/hookMessage';
+import PollButtonHandler from './events/interactions/buttons/poll';
+import QuizButtonHandler from './events/interactions/buttons/quizzes';
+import InputButtonHandler from './events/interactions/buttons/input';
+import ModalManager from './events/interactions/modals';
+import InputModalHandler from './events/interactions/modals/input';
 
 export default class Bot {
   constructor() {}
@@ -73,7 +77,12 @@ export default class Bot {
         allowedLinksList.map((link) => link.link),
       );
       const commandManager = new CommandManager(generateCommands(channelCache));
-      const buttonManager = new ButtonManager([new PollButtonHandler()]);
+      const buttonManager = new ButtonManager([
+        new PollButtonHandler(),
+        new QuizButtonHandler(),
+        new InputButtonHandler(),
+      ]);
+      const modalManager = new ModalManager([new InputModalHandler()]);
       const messageCommandHandler = new MessageCommandHandler([
         new GmMessageCommand(),
         new FlipMessageCommand(),
@@ -88,7 +97,7 @@ export default class Bot {
         new ChannelDeleteHandler(channelCache),
         new GuildJoinHandler(channelCache),
         new GuildLeaveHandler(channelCache),
-        new InteractionHandler(commandManager, buttonManager),
+        new InteractionHandler(commandManager, buttonManager, modalManager),
         new MessageCreateHandler(
           channelCache,
           allowedLinks,
