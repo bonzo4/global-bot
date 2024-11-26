@@ -28,30 +28,29 @@ export default class HookMessageHandler implements EventHandler {
     const embeds = await getEmbedsByMessageId(hookMessage.id);
     if (!embeds.length) return;
 
-    const embedWithButtons = await Promise.all(
+    const embedsWithButtons = await Promise.all(
       embeds.map(async (embed) => {
         const buttons = await getEmbedButtons(embed);
         return { embed, buttons };
       }),
     );
 
-    const embedsWithButtons: { embed: EmbedRow[]; buttons: EmbedButton[] }[] =
-      [];
-    let currentGroup: EmbedRow[] = [];
-    let currentButtons: EmbedButton[] = [];
+    const result: { embed: EmbedRow[]; buttons: EmbedButton[] }[] = []; // This array will store the final grouped results
+    let currentGroup: EmbedRow[] = []; // Correctly typed to store EmbedRow items
+    let currentButtons: EmbedButton[] = []; // Correctly initialize an empty button array
 
-    // Iterate through each embed item in embedWithButtons
-    for (const { embed, buttons } of embedWithButtons) {
+    // Iterate through each embed item in embedsWithButtons
+    for (const { embed, buttons } of embedsWithButtons) {
       // Add the current embed to the current group
       currentGroup.push(embed);
 
-      // If buttons exist or the current group has 5 embeds, finalize the group
+      // If the current embed has buttons or the current group has reached 5 embeds, finalize the group
       if (buttons.length > 0 || currentGroup.length === 5) {
-        // Set the current buttons to the ones found in this embed
+        // Set the current buttons to the ones found in this embed (if any)
         currentButtons = buttons;
 
-        // Push the current group to the result list
-        embedsWithButtons.push({
+        // Push the current group to the result list, ensuring all grouped embeds are included
+        result.push({
           embed: currentGroup,
           buttons: currentButtons,
         });
@@ -64,11 +63,15 @@ export default class HookMessageHandler implements EventHandler {
 
     // If there's any leftover embeds in the current group, add them to the result
     if (currentGroup.length > 0) {
-      embedsWithButtons.push({
+      result.push({
         embed: currentGroup,
         buttons: currentButtons,
       });
     }
+
+    // The `result` now contains the final grouped embeds with their buttons.
+
+    // Now, `result` contains the final grouped embeds with their buttons
 
     const access = await getMessageAccess(hookMessage.id);
 
@@ -83,7 +86,7 @@ export default class HookMessageHandler implements EventHandler {
             type: 'hookMessage',
             data: {
               message: hookMessage,
-              embeds: embedsWithButtons,
+              embeds: result,
               access: access,
             },
           },
