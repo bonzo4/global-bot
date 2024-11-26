@@ -81,6 +81,7 @@ export default class Bot {
           {
             name: `to ${serverCount} servers`,
             type: ActivityType.Listening,
+            url: process.env.INVITE,
           },
         ],
         status: 'online',
