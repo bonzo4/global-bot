@@ -86,7 +86,7 @@ export default class HookMessageHandler implements EventHandler {
             type: 'hookMessage',
             data: {
               message: hookMessage,
-              embeds: result.reverse(),
+              embeds: result,
               access: access,
             },
           },
