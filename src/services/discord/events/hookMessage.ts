@@ -80,26 +80,28 @@ export default class HookMessageHandler implements EventHandler {
     const access = await getMessageAccess(hookMessage.id);
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const scheduleMessageUtils = new ScheduledMessageUtils(
-        this.client,
-        this.channelCache,
-        {
-          channelId: channelId,
-          payload: {
-            type: 'hookMessage',
-            data: {
-              message: hookMessage,
-              embeds: result,
-              access: access,
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const scheduleMessageUtils = new ScheduledMessageUtils(
+          this.client,
+          this.channelCache,
+          {
+            channelId: channelId,
+            payload: {
+              type: 'hookMessage',
+              data: {
+                message: hookMessage,
+                embeds: result,
+                access: access,
+              },
             },
           },
-        },
-      );
+        );
 
-      await scheduleMessageUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing hook message: ${err.message}`);
-      });
-    }
+        await scheduleMessageUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing hook message: ${err.message}`);
+        });
+      }),
+    );
   };
 }

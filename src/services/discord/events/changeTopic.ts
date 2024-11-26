@@ -13,11 +13,13 @@ export default class ChangeTopicHandler implements EventHandler {
 
   process = async ({ topic }: { topic: string }): Promise<void> => {
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      this.handleChannel(channelId, topic).catch((err) => {
-        Logger.error(`Error processing change topic: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map((channelId) =>
+        this.handleChannel(channelId, topic).catch((err) => {
+          Logger.error(`Error processing change topic: ${err.message}`);
+        }),
+      ),
+    );
   };
 
   private async handleChannel(channelId: string, topic: string): Promise<void> {

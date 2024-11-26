@@ -91,7 +91,7 @@ export default class PollButtonHandler implements ButtonHandler {
     }
 
     if (pollInteractionChoice) {
-      const resultsMessage = `You already voted.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+      const resultsMessage = `🌐┃You already voted.\n\n📊┃**Results**\n\n❓┃*Question*: ${
         poll.question
       }\n\n${this.formateResults(
         pollChoices,
@@ -101,7 +101,7 @@ export default class PollButtonHandler implements ButtonHandler {
       )}`;
 
       await interaction.followUp({
-        embeds: [EmbedUtils.Success(resultsMessage)],
+        embeds: [EmbedUtils.Info(resultsMessage)],
         ephemeral: true,
       });
       return;
@@ -133,7 +133,7 @@ export default class PollButtonHandler implements ButtonHandler {
       guild_id: interaction.guild.id,
     });
 
-    const resultsMessage = `Thank you for voting.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+    const resultsMessage = `🌐┃Thank you for voting.\n\n📊┃**Results**\n\n❓┃*Question*: ${
       poll.question
     }\n\n${this.formateResults(
       pollChoices,
@@ -142,7 +142,7 @@ export default class PollButtonHandler implements ButtonHandler {
     )}\n\n+100`;
 
     await interaction.followUp({
-      embeds: [EmbedUtils.Success(resultsMessage)],
+      embeds: [EmbedUtils.Info(resultsMessage)],
       ephemeral: true,
     });
   };

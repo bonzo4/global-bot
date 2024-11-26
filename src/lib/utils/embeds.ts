@@ -8,7 +8,7 @@ export class EmbedUtils {
   public static Info(content: string): EmbedBuilder {
     return new EmbedBuilder()
       .setTitle('🌐 Global Chat')
-      .setDescription(`🌐┃${content}`)
+      .setDescription(`${content}`)
       .setColor(0x000000);
   }
 
@@ -55,9 +55,9 @@ export class EmbedUtils {
     channelAccess: ChannelAccess,
   ): EmbedBuilder {
     return new EmbedBuilder()
-      .setTitle('🌐 Welcome')
+      .setTitle('🌐 Welcome to Global')
       .setDescription(
-        `🎉┃${guild.name} joined ${channelAccess.slice(0, 1).toUpperCase()}${channelAccess.slice(1)}`,
+        `🎉┃${guild.name} joined ${channelAccess.slice(0, 1).toUpperCase()}${channelAccess.slice(1)} Chat`,
       )
       .setColor(0x000000);
   }
@@ -69,7 +69,7 @@ export class EmbedUtils {
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/Bot%20Images/coinflip_gif.gif',
       )
       .setDescription(
-        `${user.username} chose ${flip.choice} and put a ${flip.points} bet.\n\nGood luck!`,
+        `${user.username} chose ${flip.choice} and put a ${Math.abs(flip.points)} bet.\n\nGood luck!`,
       );
   }
 
@@ -96,7 +96,7 @@ export class EmbedUtils {
     return new EmbedBuilder()
       .setTitle(':moneybag: Thievery!!!')
       .setDescription(
-        `${user.username} is attempting to steal ${steal.points} from ${target.username}.\n\nGood luck!`,
+        `${user.username} is attempting to steal ${Math.abs(steal.points)} from ${target.username}.\n\nGood luck!`,
       )
       .setThumbnail(
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/Bot%20Images/thievery_gif.gif',

@@ -30,19 +30,21 @@ export default class GmMessageHandler implements EventHandler {
     if (!userRow) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow,
-        sourceChannel,
-        payload: {
-          type: 'gmMessage',
-          data: { claimedPoints },
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing gm message: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow,
+          sourceChannel,
+          payload: {
+            type: 'gmMessage',
+            data: { claimedPoints },
+          },
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing gm message: ${err.message}`);
+        });
+      }),
+    );
   };
 }

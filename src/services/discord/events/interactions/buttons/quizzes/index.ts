@@ -91,7 +91,7 @@ export default class QuizButtonHandler implements ButtonHandler {
     }
 
     if (quizInteractionChoice) {
-      const resultsMessage = `You already answered.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+      const resultsMessage = `🌐┃You already answered.\n\n📊┃**Results**\n\n❓┃*Question*: ${
         quiz.question
       }\n\n${this.formateResults(
         quizChoices,
@@ -101,7 +101,7 @@ export default class QuizButtonHandler implements ButtonHandler {
       )}\n\n⭐┃Answer: ${quiz.answer}`;
 
       await interaction.followUp({
-        embeds: [EmbedUtils.Success(resultsMessage)],
+        embeds: [EmbedUtils.Info(resultsMessage)],
         ephemeral: true,
       });
       return;
@@ -131,7 +131,7 @@ export default class QuizButtonHandler implements ButtonHandler {
       guild_id: interaction.guild.id,
     });
 
-    const resultsMessage = `Thank you for voting.\n\n📊┃**Results**\n\n❓┃*Question*: ${
+    const resultsMessage = `🌐┃Thank you for voting.\n\n📊┃**Results**\n\n❓┃*Question*: ${
       quiz.question
     }\n\n${this.formateResults(
       quizChoices,
@@ -140,7 +140,7 @@ export default class QuizButtonHandler implements ButtonHandler {
     )}\n\n⭐┃Answer: ${quiz.answer}\n\n+100`;
 
     await interaction.followUp({
-      embeds: [EmbedUtils.Success(resultsMessage)],
+      embeds: [EmbedUtils.Info(resultsMessage)],
       ephemeral: true,
     });
   };

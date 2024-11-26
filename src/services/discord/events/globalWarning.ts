@@ -30,19 +30,21 @@ export default class GlobalWarningHanlder implements EventHandler {
     if (!userRow) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow,
-        sourceChannel,
-        payload: {
-          type: 'warning',
-          data: warning,
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing global warning: ${err}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow,
+          sourceChannel,
+          payload: {
+            type: 'warning',
+            data: warning,
+          },
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing global warning: ${err}`);
+        });
+      }),
+    );
   };
 }

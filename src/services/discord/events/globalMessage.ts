@@ -32,20 +32,22 @@ export default class GlobalMessageHandler implements EventHandler {
     if (!user) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      if (sourceChannelId === channelId) continue;
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow: user,
-        sourceChannel,
-        payload: {
-          type: 'message',
-          data: messageData,
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing global message: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        if (sourceChannelId === channelId) return;
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow: user,
+          sourceChannel,
+          payload: {
+            type: 'message',
+            data: messageData,
+          },
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing global message: ${err.message}`);
+        });
+      }),
+    );
   };
 }

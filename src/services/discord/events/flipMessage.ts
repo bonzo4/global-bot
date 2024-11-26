@@ -32,19 +32,21 @@ export default class FlipMessageHandler implements EventHandler {
     if (!user) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow: user,
-        sourceChannel,
-        payload: {
-          type: 'flip',
-          data: flipRow,
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing flip message: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow: user,
+          sourceChannel,
+          payload: {
+            type: 'flip',
+            data: flipRow,
+          },
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing flip message: ${err.message}`);
+        });
+      }),
+    );
   };
 }

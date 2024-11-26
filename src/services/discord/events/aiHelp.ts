@@ -32,19 +32,21 @@ export default class AiHelpHandler implements EventHandler {
     if (!userRow) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow,
-        sourceChannel,
-        payload: {
-          type: 'aiResponse',
-          data: responseRow,
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing ai response: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow,
+          sourceChannel,
+          payload: {
+            type: 'aiResponse',
+            data: responseRow,
+          },
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing ai response: ${err.message}`);
+        });
+      }),
+    );
   };
 }

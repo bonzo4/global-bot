@@ -15,11 +15,13 @@ export default class GlobalBanHandler implements EventHandler {
 
   process = async ({ userId }: { userId: string }): Promise<void> => {
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      this.handleChannel(channelId, userId).catch((err) => {
-        Logger.error(`Error processing global ban: ${err.message}`);
-      });
-    }
+    await Promise.all(
+      channelIds.map((channelId) =>
+        this.handleChannel(channelId, userId).catch((err) => {
+          Logger.error(`Error processing global ban: ${err.message}`);
+        }),
+      ),
+    );
   };
 
   private async handleChannel(

@@ -35,22 +35,24 @@ export default class StealMessageHandler implements EventHandler {
     if (!target) return;
 
     const channelIds = this.channelCache.getGlobalChannelIds();
-    for (const channelId of channelIds) {
-      const sendingUtils = new SendingUtils(this.client, this.channelCache, {
-        channelId,
-        userRow: user,
-        sourceChannel,
-        payload: {
-          type: 'steal',
-          data: {
-            steal: stealRow,
-            target,
+    await Promise.all(
+      channelIds.map(async (channelId) => {
+        const sendingUtils = new SendingUtils(this.client, this.channelCache, {
+          channelId,
+          userRow: user,
+          sourceChannel,
+          payload: {
+            type: 'steal',
+            data: {
+              steal: stealRow,
+              target,
+            },
           },
-        },
-      });
-      await sendingUtils.handleChannel().catch((err) => {
-        Logger.error(`Error processing flip message: ${err.message}`);
-      });
-    }
+        });
+        await sendingUtils.handleChannel().catch((err) => {
+          Logger.error(`Error processing flip message: ${err.message}`);
+        });
+      }),
+    );
   };
 }
