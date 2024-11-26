@@ -40,10 +40,11 @@ export function wrapProfanities(input: string): string {
 }
 
 export function getAllLinks(text: string) {
-  // Regular expression to match URLs
-  const urlRegex = /(https?:\/\/[^\s.,!?]+?)/g;
+  // Improved regular expression to match URLs
+  const urlRegex =
+    /(https?:\/\/[a-zA-Z0-9-_.~:/?#@!$&'()*+,;=%]+[a-zA-Z0-9-_.~:/?#@!$&'()*+,;=%])/g;
 
-  // Match URLs in the text and count them
+  // Match URLs in the text
   const matches = text.match(urlRegex);
   if (matches) {
     return matches.map((match) => match.trim());
