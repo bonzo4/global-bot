@@ -73,7 +73,6 @@ export default class Bot {
       const globalChannelIds = await this.getChannelIds(guildIds);
       const channelCache = new ChannelCache(globalChannelIds);
       const allowedLinksList = await getAllowedLinks();
-      console.log(allowedLinksList);
       const allowedLinks = new AllowedLinks(
         allowedLinksList.map((link) => link.link),
       );

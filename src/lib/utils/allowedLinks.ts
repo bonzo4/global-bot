@@ -2,7 +2,9 @@ export default class AllowedLinks {
   constructor(private readonly allowedLinks: string[]) {}
 
   public isAllowedLink(link: string): boolean {
-    return this.allowedLinks.includes(link);
+    return this.allowedLinks.some((allowedLink) =>
+      link.startsWith(allowedLink),
+    );
   }
 
   public addAllowedLink(link: string): void {
