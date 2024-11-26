@@ -78,6 +78,7 @@ export default class StealMessageCommand implements MessageCommand {
           sourceChannelId: message.channel.id,
         },
       });
+      return;
     }
 
     const flipResult = Math.random() < 0.3;
