@@ -3,11 +3,11 @@ import { GuildRow } from 'src/lib/types/guilds';
 import { MessageCommand } from '.';
 import { UserRow } from 'src/lib/types/user';
 import { getGameStats } from 'src/lib/data/game/getGameStats';
-import insertGameStats from 'src/lib/data/game/insertGameStats';
 import { GameStatsRow } from 'src/lib/types/game';
 import { insertGameFlip } from 'src/lib/data/game/insertGameFlip';
 import { updateGameStats } from 'src/lib/data/game/updateGameStats';
 import { broadcastWarning } from 'src/lib/utils/broadcast';
+import { insertGameStats } from 'src/lib/data/game/insertGameStats';
 
 export default class FlipMessageCommand implements MessageCommand {
   name = '!flip';

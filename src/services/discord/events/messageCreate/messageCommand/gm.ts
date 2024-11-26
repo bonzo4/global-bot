@@ -3,12 +3,12 @@ import { MessageCommand } from '.';
 import { UserRow } from 'src/lib/types/user';
 import { GuildRow } from 'src/lib/types/guilds';
 import { getGameStats } from 'src/lib/data/game/getGameStats';
-import insertGameStats from 'src/lib/data/game/insertGameStats';
 import { updateGameStats } from 'src/lib/data/game/updateGameStats';
 import { Jimp } from 'jimp';
 import { supabase } from 'src/lib/supabase';
 import { promises as fs } from 'node:fs';
 import { updateGuild } from 'src/lib/data/guilds/updateGuild';
+import { insertGameStats } from 'src/lib/data/game/insertGameStats';
 
 export default class GmMessageCommand implements MessageCommand {
   name = 'gm';

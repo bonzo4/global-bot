@@ -1,6 +1,5 @@
 import { Client, Message } from 'discord.js';
 import { getGameStats } from 'src/lib/data/game/getGameStats';
-import insertGameStats from 'src/lib/data/game/insertGameStats';
 import { GuildRow } from 'src/lib/types/guilds';
 import { UserRow } from 'src/lib/types/user';
 import { MessageCommand } from '.';
@@ -9,6 +8,7 @@ import { broadcastWarning } from 'src/lib/utils/broadcast';
 import { searchUser } from 'src/lib/data/users/searchUser';
 import { insertGameSteal } from 'src/lib/data/game/insertGameSteal';
 import { updateGameStats } from 'src/lib/data/game/updateGameStats';
+import { insertGameStats } from 'src/lib/data/game/insertGameStats';
 
 export default class StealMessageCommand implements MessageCommand {
   name = '!steal';
