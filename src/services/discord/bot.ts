@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { ActivityType, Client } from 'discord.js';
 import EventManager from './events';
 import GuildJoinHandler from './events/guildJoin';
 import { setGuildShardId } from 'src/lib/data/guilds/setGuildShardId';
@@ -37,6 +37,7 @@ import QuizButtonHandler from './events/interactions/buttons/quizzes';
 import InputButtonHandler from './events/interactions/buttons/input';
 import ModalManager from './events/interactions/modals';
 import InputModalHandler from './events/interactions/modals/input';
+import { getServerCount } from 'src/lib/utils/discordData';
 
 export default class Bot {
   constructor() {}
@@ -69,7 +70,21 @@ export default class Bot {
       }
       Logger.log(`Shard ID Launched: ${shard.ids[0]}`);
       await this.saveShardIds(guildIds, shard.ids[0]);
-
+      const botUser = client.user;
+      if (!botUser) {
+        client.destroy();
+        return;
+      }
+      const serverCount = await getServerCount();
+      botUser.setPresence({
+        activities: [
+          {
+            name: `to ${serverCount} servers`,
+            type: ActivityType.Listening,
+          },
+        ],
+        status: 'online',
+      });
       const globalChannelIds = await this.getChannelIds(guildIds);
       const channelCache = new ChannelCache(globalChannelIds);
       const allowedLinksList = await getAllowedLinks();

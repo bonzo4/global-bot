@@ -41,7 +41,7 @@ export class EmbedUtils {
     return new EmbedBuilder()
       .setTitle(':sunny: **GM**')
       .setDescription(
-        `${userRow.username} says GM from ${guildRow.name}${claimedPoints ? '\n\nYou have claimed your points for today!' : ''}`,
+        `${userRow.username} says GM from ${guildRow.name}\n\n${claimedPoints ? '\n\nYou have claimed your points for today!' : '+ 100'}`,
       )
       .setThumbnail(
         guildRow.gm_url
