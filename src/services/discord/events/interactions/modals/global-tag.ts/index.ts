@@ -8,7 +8,7 @@ import { getGuildTag } from 'src/lib/data/guilds/getGuildTag';
 export default class GlobalTagModalHandler implements ModalHandler {
   customId = 'global_tag';
   options = {
-    deferReply: false,
+    deferReply: true,
   };
 
   process = async (interaction: ModalSubmitInteraction): Promise<void> => {

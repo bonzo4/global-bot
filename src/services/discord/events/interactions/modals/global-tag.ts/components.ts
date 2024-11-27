@@ -6,7 +6,7 @@ export function globalTagModal() {
     .setCustomId(`tag`)
     .setLabel('Enter your tag')
     .setPlaceholder('Type your tag here')
-    .setStyle(TextInputStyle.Paragraph)
+    .setStyle(TextInputStyle.Short)
     .setRequired(true)
     .setMinLength(2)
     .setMaxLength(10);
