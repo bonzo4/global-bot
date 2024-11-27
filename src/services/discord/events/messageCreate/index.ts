@@ -61,20 +61,20 @@ export default class MessageCreateHandler implements EventHandler {
     // );
     // if (missingPermissions.length) return;
 
-    const webhooks = await channel.fetchWebhooks();
-    const hasWebhook = webhooks.some(
-      (webhook) => webhook.url === globalChannelRow.webhook_url,
-    );
-    if (!hasWebhook) {
-      await message.reply({
-        embeds: [
-          EmbedUtils.Warning(
-            `This channel is missing a webhook. Please have an admin run /fix-global-chat ${channelMention(message.channelId)}.`,
-          ),
-        ],
-      });
-      return;
-    }
+    // const webhooks = await channel.fetchWebhooks();
+    // const hasWebhook = webhooks.some(
+    //   (webhook) => webhook.url === globalChannelRow.webhook_url,
+    // );
+    // if (!hasWebhook) {
+    //   await message.reply({
+    //     embeds: [
+    //       EmbedUtils.Warning(
+    //         `This channel is missing a webhook. Please have an admin run /fix-global-chat ${channelMention(message.channelId)}.`,
+    //       ),
+    //     ],
+    //   });
+    //   return;
+    // }
 
     if (!guildRow.tag) {
       await message.reply({

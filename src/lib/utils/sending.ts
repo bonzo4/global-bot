@@ -1,7 +1,6 @@
 import {
   ChannelType,
   Client,
-  EmbedBuilder,
   SnowflakeUtil,
   TextChannel,
   WebhookClient,
@@ -18,7 +17,6 @@ import { getGuild } from '../data/guilds/getGuild';
 import { getGuildChannelAccess } from '../data/channels/getGuildChannelAccess';
 import { GuildRow } from '../types/guilds';
 import { FlipRow, StealRow } from '../types/game';
-import { Logger } from '@nestjs/common';
 import { insertError } from '../data/errors/insertError';
 
 type DataOptions = {
