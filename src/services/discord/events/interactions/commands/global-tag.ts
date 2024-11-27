@@ -23,7 +23,7 @@ export default class GlobalTagCommand implements CommandHandler {
     const guild = interaction.guild;
 
     if (!guild) {
-      await interaction.followUp({
+      await interaction.reply({
         embeds: [
           EmbedUtils.Warning('This command can only be used in a server.'),
         ],
@@ -34,19 +34,12 @@ export default class GlobalTagCommand implements CommandHandler {
     let guildRow = await getGuild(guild.id);
 
     if (!guildRow) {
-      await interaction.followUp({
+      await interaction.reply({
         embeds: [
           EmbedUtils.Warning(
             'An error occurred while fetching the server data.',
           ),
         ],
-      });
-      return;
-    }
-
-    if (guildRow.tag) {
-      await interaction.followUp({
-        embeds: [EmbedUtils.Warning('This server already has a tag.')],
       });
       return;
     }

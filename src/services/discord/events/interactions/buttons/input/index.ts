@@ -21,7 +21,7 @@ export default class InputButtonHandler implements ButtonHandler {
     const input = await getInput(parseInt(inputId, 10));
 
     if (!input) {
-      await interaction.followUp({
+      await interaction.reply({
         embeds: [EmbedUtils.Warning('Input not found.')],
         ephemeral: true,
       });
@@ -30,7 +30,7 @@ export default class InputButtonHandler implements ButtonHandler {
 
     const embed = await getEmbed(input.embed_id);
     if (!embed) {
-      await interaction.followUp({
+      await interaction.reply({
         embeds: [EmbedUtils.Warning('Input not found.')],
         ephemeral: true,
       });
@@ -47,7 +47,7 @@ export default class InputButtonHandler implements ButtonHandler {
     );
 
     if (inputInteraction) {
-      await interaction.followUp({
+      await interaction.reply({
         embeds: [EmbedUtils.Warning('You have already answered this input.')],
         ephemeral: true,
       });
