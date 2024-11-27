@@ -139,6 +139,8 @@ export default class MessageCreateHandler implements EventHandler {
       context: { messageId: message.id, sourceChannelId: message.channel.id },
     });
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const command = this.messageCommandHandler.getCommand(message.content);
     if (command) {
       await command.process(message, guildRow, userRow);
