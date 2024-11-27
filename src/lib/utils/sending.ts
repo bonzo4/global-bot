@@ -188,7 +188,7 @@ export class SendingUtils {
         : userRow.is_verified
           ? ' ⭐️'
           : '';
-    const username = `[${guildTag.toUpperCase()}]` + name + icon;
+    const username = `[${guildTag.toUpperCase()}] ` + name + icon;
     const nonce = SnowflakeUtil.generate().toString();
 
     await globalWebhook.send({

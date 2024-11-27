@@ -88,6 +88,7 @@ export default class Bot {
         status: 'online',
       });
       const globalChannelIds = await this.getChannelIds(guildIds);
+      Logger.log(globalChannelIds);
       const channelCache = new ChannelCache(globalChannelIds);
       const allowedLinksList = await getAllowedLinks();
       const allowedLinks = new AllowedLinks(

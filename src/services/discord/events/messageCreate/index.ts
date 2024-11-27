@@ -54,12 +54,12 @@ export default class MessageCreateHandler implements EventHandler {
     const globalChannelRow = await getGlobalChannel(message.channel.id);
     if (!globalChannelRow) return;
 
-    if (!guild.members.me) return;
-    const permissions = channel.permissionsFor(guild.members.me);
-    const missingPermissions = permissions.missing(
-      RequiredPermissions.minimumPermissions,
-    );
-    if (missingPermissions.length) return;
+    // if (!guild.members.me) return;
+    // const permissions = channel.permissionsFor(guild.members.me);
+    // const missingPermissions = permissions.missing(
+    //   RequiredPermissions.minimumPermissions,
+    // );
+    // if (missingPermissions.length) return;
 
     const webhooks = await channel.fetchWebhooks();
     const hasWebhook = webhooks.some(
