@@ -5,11 +5,7 @@ import { insertGuild } from 'src/lib/data/guilds/insertGuild';
 import { updateGuild } from 'src/lib/data/guilds/updateGuild';
 import RequiredPermissions from 'src/lib/utils/permissions';
 import TickerText from 'src/lib/utils/tickerText';
-import { getGuildChannels } from 'src/lib/data/channels/getGuildChannels';
-import { createGlobalWebhook } from 'src/lib/utils/webhooks';
-import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
 import ChannelCache from 'src/lib/utils/channelCache';
-import { EmbedUtils } from 'src/lib/utils/embeds';
 
 export default class GuildJoinHandler implements EventHandler {
   constructor(private readonly channelCache: ChannelCache) {}

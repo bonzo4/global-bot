@@ -6,6 +6,7 @@ import { getMessage } from 'src/lib/data/messages/getMessage';
 import { getUser } from 'src/lib/data/users/getUser';
 import { SendingUtils } from 'src/lib/utils/sending';
 import { Logger } from '@nestjs/common';
+import { getGuild } from 'src/lib/data/guilds/getGuild';
 
 export default class GlobalMessageHandler implements EventHandler {
   eventName = 'globalMessage';
@@ -24,6 +25,10 @@ export default class GlobalMessageHandler implements EventHandler {
   }): Promise<void> => {
     const sourceChannel = await getGlobalChannel(sourceChannelId);
     if (!sourceChannel) return;
+    const guildRow = await getGuild(sourceChannel.guild_id);
+    if (!guildRow) return;
+    const tag = guildRow.tag;
+    if (!tag) return;
 
     const messageData = await getMessage(messageId);
     if (!messageData || messageData.deleted) return;
@@ -41,7 +46,7 @@ export default class GlobalMessageHandler implements EventHandler {
           sourceChannel,
           payload: {
             type: 'message',
-            data: messageData,
+            data: { message: messageData, tag },
           },
         });
         await sendingUtils.handleChannel().catch((err) => {

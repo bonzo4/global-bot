@@ -26,7 +26,7 @@ type DataOptions = {
   userRow: UserRow;
   sourceChannel: ChannelRow;
   payload:
-    | { type: 'message'; data: MessageRow }
+    | { type: 'message'; data: { message: MessageRow; tag: string } }
     | { type: 'aiResponse'; data: AiResponseRow }
     | { type: 'gmMessage'; data: { claimedPoints: boolean } }
     | { type: 'flip'; data: FlipRow }
@@ -85,9 +85,9 @@ export class SendingUtils {
       if (payload.type === 'message') {
         await this.sendGlobalMessage(
           channelData.webhook_url,
-          payload.data,
+          payload.data.message,
           userRow,
-          guildData,
+          payload.data.tag,
         );
       } else if (payload.type === 'gmMessage') {
         await this.sendGMMessage(
@@ -176,12 +176,11 @@ export class SendingUtils {
     webhookUrl: string,
     messageData: MessageRow,
     userRow: UserRow,
-    guildRow: GuildRow,
+    guildTag: string,
   ): Promise<void> {
     const globalWebhook = new WebhookClient({ url: webhookUrl });
 
     const name = userRow.display_name ? userRow.display_name : userRow.username;
-    const tag = guildRow.tag ? `[${guildRow.tag.toUpperCase()}] ` : '';
     const icon = userRow.is_admin
       ? ' 🌎'
       : userRow.is_mod
@@ -189,7 +188,7 @@ export class SendingUtils {
         : userRow.is_verified
           ? ' ⭐️'
           : '';
-    const username = tag + name + icon;
+    const username = guildTag + name + icon;
     const nonce = SnowflakeUtil.generate().toString();
 
     await globalWebhook.send({

@@ -59,6 +59,8 @@ export default class MessageCreateHandler implements EventHandler {
     );
     if (!hasWebhook) return;
 
+    if (!guildRow.tag) return;
+
     const userRow = await fetchUser(message.author);
 
     await insertMessage({
@@ -97,9 +99,6 @@ export default class MessageCreateHandler implements EventHandler {
     const hasOnlyAllowedLinks = links.every((link) =>
       this.allowedLinks.isAllowedLink(link),
     );
-
-    console.log('Links from message:', links);
-    console.log('Has only allowed links:', hasOnlyAllowedLinks);
 
     if (!hasOnlyAllowedLinks) {
       await message.delete();
