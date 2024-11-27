@@ -60,7 +60,9 @@ export class SendingUtils {
 
     const guildChannelAccess = await getGuildChannelAccess(guildData.id);
     const hasGuildAccess = guildChannelAccess.some(
-      (access) => access.channel_access === channelData.channel_access,
+      (access) =>
+        access.channel_access === channelData.channel_access ||
+        access.channel_access === 'general',
     );
     if (!hasGuildAccess) {
       await this.sendWarningMessage(
@@ -147,7 +149,7 @@ export class SendingUtils {
     const nonce = SnowflakeUtil.generate().toString();
 
     const lastMessage = channel.messages.cache.last();
-    if (lastMessage && lastMessage.author.username === 'Global Message') {
+    if (lastMessage && lastMessage.author.username === 'NTWRK Global🌐') {
       const sameContent =
         JSON.stringify(lastMessage.embeds[0].toJSON()) ===
         JSON.stringify(EmbedUtils.Warning(warning).toJSON());
