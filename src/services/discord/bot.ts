@@ -79,7 +79,7 @@ export default class Bot {
       botUser.setPresence({
         activities: [
           {
-            name: `to ${serverCount} servers`,
+            name: `${serverCount} servers`,
             type: ActivityType.Listening,
             url: process.env.INVITE,
           },

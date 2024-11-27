@@ -36,49 +36,49 @@ export default class GuildJoinHandler implements EventHandler {
       });
     }
 
-    const botMember = await guild.members.fetchMe();
-    const permissions = botMember.permissions;
-    const missingPermissions = permissions.missing(
-      RequiredPermissions.globalPermissions,
-    );
+    // const botMember = await guild.members.fetchMe();
+    // const permissions = botMember.permissions;
+    // const missingPermissions = permissions.missing(
+    //   RequiredPermissions.globalPermissions,
+    // );
 
-    if (missingPermissions.length) return;
+    // if (missingPermissions.length) return;
 
-    const members = await guild.members.fetch();
+    // const members = await guild.members.fetch();
 
-    const hasProtectionBot = members.some((member) =>
-      ['957481307405975552'].includes(member.user.id),
-    );
+    // const hasProtectionBot = members.some((member) =>
+    //   ['957481307405975552'].includes(member.user.id),
+    // );
 
-    if (hasProtectionBot) return;
+    // if (hasProtectionBot) return;
 
-    const globalChannels = await getGuildChannels(guild.id);
+    // const globalChannels = await getGuildChannels(guild.id);
 
-    if (globalChannels.length >= 3) return;
+    // if (globalChannels.length >= 3) return;
 
-    const globalChannel = await this.createGlobalChannel(guild);
-    const webhook = await createGlobalWebhook(globalChannel);
+    // const globalChannel = await this.createGlobalChannel(guild);
+    // const webhook = await createGlobalWebhook(globalChannel);
 
-    await insertGlobalChannel({
-      guild_id: guild.id,
-      id: globalChannel.id,
-      channel_access: 'general',
-      webhook_url: webhook.url,
-    });
+    // await insertGlobalChannel({
+    //   guild_id: guild.id,
+    //   id: globalChannel.id,
+    //   channel_access: 'general',
+    //   webhook_url: webhook.url,
+    // });
 
-    this.channelCache.addGlobalChannel(globalChannel.id);
+    // this.channelCache.addGlobalChannel(globalChannel.id);
 
-    const nonce = SnowflakeUtil.generate().toString();
-    await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(globalChannel.guild, 'general')],
-      username: 'Global Message',
-      avatarURL:
-        'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
-      options: {
-        enforceNonce: true,
-        nonce,
-      },
-    });
+    // const nonce = SnowflakeUtil.generate().toString();
+    // await webhook.send({
+    //   embeds: [EmbedUtils.WelcomeMessage(globalChannel.guild, 'general')],
+    //   username: 'Global Message',
+    //   avatarURL:
+    //     'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
+    //   options: {
+    //     enforceNonce: true,
+    //     nonce,
+    //   },
+    // });
   };
 
   private async createGlobalChannel(guild: Guild) {
