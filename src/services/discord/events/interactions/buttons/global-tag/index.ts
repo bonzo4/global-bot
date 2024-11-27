@@ -22,6 +22,19 @@ export default class GlobalTagButtonHandler implements ButtonHandler {
       return;
     }
 
+    if (
+      interaction.memberPermissions &&
+      !interaction.memberPermissions.has('Administrator')
+    ) {
+      await interaction.reply({
+        embeds: [
+          EmbedUtils.Warning('You must have Admin to execute this command.'),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
     let guildRow = await getGuild(guild.id);
 
     if (!guildRow) {
@@ -35,6 +48,6 @@ export default class GlobalTagButtonHandler implements ButtonHandler {
       return;
     }
 
-    await interaction.showModal(globalTagModal());
+    await interaction.showModal(globalTagModal(Boolean(guildRow.tag)));
   };
 }

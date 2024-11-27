@@ -19,6 +19,20 @@ export default class GlobalTagModalHandler implements ModalHandler {
         embeds: [
           EmbedUtils.Warning('This command can only be used in a server.'),
         ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (
+      interaction.memberPermissions &&
+      !interaction.memberPermissions.has('Administrator')
+    ) {
+      await interaction.reply({
+        embeds: [
+          EmbedUtils.Warning('You must have Admin to execute this command.'),
+        ],
+        ephemeral: true,
       });
       return;
     }
@@ -32,6 +46,7 @@ export default class GlobalTagModalHandler implements ModalHandler {
             'An error occurred while fetching the server data.',
           ),
         ],
+        ephemeral: true,
       });
       return;
     }
@@ -64,6 +79,7 @@ export default class GlobalTagModalHandler implements ModalHandler {
           `Tag ${guildRow.tag ? 'updated' : 'set'} to: [${tag.toUpperCase()}]`,
         ),
       ],
+      ephemeral: true,
     });
   };
 }

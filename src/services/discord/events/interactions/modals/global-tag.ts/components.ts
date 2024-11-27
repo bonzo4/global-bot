@@ -1,10 +1,10 @@
 import { TextInputBuilder } from '@discordjs/builders';
 import { ActionRowBuilder, ModalBuilder, TextInputStyle } from 'discord.js';
 
-export function globalTagModal() {
+export function globalTagModal(hasTag: boolean) {
   const component = new TextInputBuilder()
     .setCustomId(`tag`)
-    .setLabel('Enter your tag')
+    .setLabel(`${hasTag ? 'Update' : 'Set'} your servers tag`)
     .setPlaceholder('Type your tag here')
     .setStyle(TextInputStyle.Short)
     .setRequired(true)

@@ -44,6 +44,6 @@ export default class GlobalTagCommand implements CommandHandler {
       return;
     }
 
-    await interaction.showModal(globalTagModal());
+    await interaction.showModal(globalTagModal(Boolean(guildRow.tag)));
   };
 }
