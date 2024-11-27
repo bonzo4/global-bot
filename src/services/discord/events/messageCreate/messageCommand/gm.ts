@@ -11,7 +11,7 @@ import { updateGuild } from 'src/lib/data/guilds/updateGuild';
 import { insertGameStats } from 'src/lib/data/game/insertGameStats';
 
 export default class GmMessageCommand implements MessageCommand {
-  name = 'gm';
+  name = '!gm';
 
   process = async (
     message: Message<true>,
