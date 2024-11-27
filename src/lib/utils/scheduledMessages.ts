@@ -63,10 +63,11 @@ export class ScheduledMessageUtils {
 
     if (!hasAccess) return;
 
-    // this isn't right
     const guildChannelAccess = await getGuildChannelAccess(guildData.id);
     const hasGuildAccess = guildChannelAccess.some(
-      (access) => access.channel_access === channelData.channel_access,
+      (access) =>
+        access.channel_access === channelData.channel_access ||
+        access.channel_access === 'general',
     );
     if (!hasGuildAccess) {
       await this.sendWarningMessage(
