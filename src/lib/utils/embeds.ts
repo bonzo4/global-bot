@@ -53,11 +53,12 @@ export class EmbedUtils {
   public static WelcomeMessage(
     guild: Guild,
     channelAccess: ChannelAccess,
+    hasTag: boolean,
   ): EmbedBuilder {
     return new EmbedBuilder()
       .setTitle('🌐 Welcome to Global')
       .setDescription(
-        `🎉┃${guild.name} joined ${channelAccess.slice(0, 1).toUpperCase()}${channelAccess.slice(1)} Chat`,
+        `🎉┃${guild.name} joined ${channelAccess.slice(0, 1).toUpperCase()}${channelAccess.slice(1)} Chat.${hasTag ? '' : ''}`,
       )
       .setColor(0x000000);
   }

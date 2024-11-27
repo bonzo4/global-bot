@@ -1,4 +1,10 @@
-import { ChannelType, Client, ClientEvents, Message } from 'discord.js';
+import {
+  channelMention,
+  ChannelType,
+  Client,
+  ClientEvents,
+  Message,
+} from 'discord.js';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { getGuild } from 'src/lib/data/guilds/getGuild';
 import { getGlobalChannel } from 'src/lib/data/channels/getGlobalChannel';
@@ -10,6 +16,8 @@ import AllowedLinks from 'src/lib/utils/allowedLinks';
 import { EventHandler } from '..';
 import MessageCommandHandler from './messageCommand';
 import { fetchUser } from 'src/lib/data/users/fetchUser';
+import { EmbedUtils } from 'src/lib/utils/embeds';
+import { globalTagButton } from '../interactions/buttons/global-tag/components';
 
 export default class MessageCreateHandler implements EventHandler {
   eventName: keyof ClientEvents = 'messageCreate';
@@ -57,9 +65,28 @@ export default class MessageCreateHandler implements EventHandler {
     const hasWebhook = webhooks.some(
       (webhook) => webhook.url === globalChannelRow.webhook_url,
     );
-    if (!hasWebhook) return;
+    if (!hasWebhook) {
+      await message.reply({
+        embeds: [
+          EmbedUtils.Warning(
+            `This channel is missing a webhook. Please have an admin run /fix-global-chat ${channelMention(message.channelId)}.`,
+          ),
+        ],
+      });
+      return;
+    }
 
-    if (!guildRow.tag) return;
+    if (!guildRow.tag) {
+      await message.reply({
+        embeds: [
+          EmbedUtils.Warning(
+            'This server does not have a tag set. Please do so before sending any messages.',
+          ),
+        ],
+        components: [globalTagButton()],
+      });
+      return;
+    }
 
     const userRow = await fetchUser(message.author);
 

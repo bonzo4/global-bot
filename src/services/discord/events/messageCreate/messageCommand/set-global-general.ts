@@ -15,6 +15,7 @@ import { createGlobalWebhook } from 'src/lib/utils/webhooks';
 import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { updateGlobalChannel } from 'src/lib/data/channels/updateGlobalChannel';
+import { globalTagButton } from '../../interactions/buttons/global-tag/components';
 
 export default class SetGlobalGeneralMessageCommand implements MessageCommand {
   name = '!set-global-general';
@@ -122,7 +123,14 @@ export default class SetGlobalGeneralMessageCommand implements MessageCommand {
 
     const nonce = SnowflakeUtil.generate().toString();
     await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(selectedChannel.guild, 'general')],
+      embeds: [
+        EmbedUtils.WelcomeMessage(
+          selectedChannel.guild,
+          'general',
+          Boolean(guildData.tag),
+        ),
+      ],
+      components: guildData.tag ? [] : [globalTagButton()],
       username: 'Global Message',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',

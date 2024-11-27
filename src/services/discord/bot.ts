@@ -38,6 +38,8 @@ import InputButtonHandler from './events/interactions/buttons/input';
 import ModalManager from './events/interactions/modals';
 import InputModalHandler from './events/interactions/modals/input';
 import { getServerCount } from 'src/lib/utils/discordData';
+import GlobalTagButtonHandler from './events/interactions/buttons/global-tag';
+import GlobalTagModalHandler from './events/interactions/modals/global-tag.ts';
 
 export default class Bot {
   constructor() {}
@@ -97,8 +99,12 @@ export default class Bot {
         new PollButtonHandler(),
         new QuizButtonHandler(),
         new InputButtonHandler(),
+        new GlobalTagButtonHandler(),
       ]);
-      const modalManager = new ModalManager([new InputModalHandler()]);
+      const modalManager = new ModalManager([
+        new InputModalHandler(),
+        new GlobalTagModalHandler(),
+      ]);
       const messageCommandHandler = new MessageCommandHandler([
         new GmMessageCommand(),
         new FlipMessageCommand(),

@@ -17,6 +17,7 @@ import RequiredPermissions from 'src/lib/utils/permissions';
 import { createGlobalWebhook } from 'src/lib/utils/webhooks';
 import { updateGlobalChannel } from 'src/lib/data/channels/updateGlobalChannel';
 import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
+import { globalTagButton } from '../buttons/global-tag/components';
 
 export default class SetGlobalGeneralCommand implements CommandHandler {
   constructor(private readonly channelCache: ChannelCache) {}
@@ -130,7 +131,14 @@ export default class SetGlobalGeneralCommand implements CommandHandler {
 
     const nonce = SnowflakeUtil.generate().toString();
     await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(selectedChannel.guild, 'general')],
+      embeds: [
+        EmbedUtils.WelcomeMessage(
+          selectedChannel.guild,
+          'general',
+          Boolean(guildData.tag),
+        ),
+      ],
+      components: guildData.tag ? [] : [globalTagButton()],
       username: 'Global Message',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
@@ -146,6 +154,7 @@ export default class SetGlobalGeneralCommand implements CommandHandler {
           `The channel ${channelMention(selectedChannel.id)} has been set as a global channel with access to General.`,
         ),
       ],
+      components: guildData.tag ? [] : [globalTagButton()],
       ephemeral: true,
     });
   };

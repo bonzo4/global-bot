@@ -17,6 +17,7 @@ import TickerText from 'src/lib/utils/tickerText';
 import { createGlobalWebhook } from 'src/lib/utils/webhooks';
 import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
 import { getGuildChannelAccess } from 'src/lib/data/channels/getGuildChannelAccess';
+import { globalTagButton } from '../buttons/global-tag/components';
 
 export default class GlobalSuperteamCommand implements CommandHandler {
   constructor(private readonly channelCache: ChannelCache) {}
@@ -87,7 +88,14 @@ export default class GlobalSuperteamCommand implements CommandHandler {
 
     const nonce = SnowflakeUtil.generate().toString();
     await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(channel.guild, 'superteam')],
+      embeds: [
+        EmbedUtils.WelcomeMessage(
+          channel.guild,
+          'superteam',
+          Boolean(guildData.tag),
+        ),
+      ],
+      components: guildData.tag ? [] : [globalTagButton()],
       username: 'Global Message',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
@@ -100,7 +108,7 @@ export default class GlobalSuperteamCommand implements CommandHandler {
     await interaction.followUp({
       embeds: [
         EmbedUtils.Success(
-          `Global channel created at ${channelMention(channel.id)} with access to Superteam Chat.`,
+          `Global channel created at ${channelMention(channel.id)} with access to Superteam Chat. ${guildData.tag ? '' : 'Please create a tag for your sever now.'}`,
         ),
       ],
       ephemeral: true,

@@ -16,6 +16,7 @@ import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
 import ChannelCache from 'src/lib/utils/channelCache';
 import { updateGlobalChannel } from 'src/lib/data/channels/updateGlobalChannel';
 import { getGuildChannelAccess } from 'src/lib/data/channels/getGuildChannelAccess';
+import { globalTagButton } from '../../interactions/buttons/global-tag/components';
 
 export default class SetGlobalSuperteamMessageCommand
   implements MessageCommand
@@ -141,7 +142,14 @@ export default class SetGlobalSuperteamMessageCommand
 
     const nonce = SnowflakeUtil.generate().toString();
     await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(selectedChannel.guild, 'superteam')],
+      embeds: [
+        EmbedUtils.WelcomeMessage(
+          selectedChannel.guild,
+          'superteam',
+          Boolean(guildData.tag),
+        ),
+      ],
+      components: guildData.tag ? [] : [globalTagButton()],
       username: 'Global Message',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',

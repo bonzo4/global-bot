@@ -16,6 +16,7 @@ import { EmbedUtils } from 'src/lib/utils/embeds';
 import TickerText from 'src/lib/utils/tickerText';
 import { createGlobalWebhook } from 'src/lib/utils/webhooks';
 import { insertGlobalChannel } from 'src/lib/data/channels/insertGlobalChannel';
+import { globalTagButton } from '../buttons/global-tag/components';
 
 export default class GlobalGeneralCommand implements CommandHandler {
   constructor(private readonly channelCache: ChannelCache) {}
@@ -69,7 +70,14 @@ export default class GlobalGeneralCommand implements CommandHandler {
 
     const nonce = SnowflakeUtil.generate().toString();
     await webhook.send({
-      embeds: [EmbedUtils.WelcomeMessage(channel.guild, 'general')],
+      embeds: [
+        EmbedUtils.WelcomeMessage(
+          channel.guild,
+          'general',
+          Boolean(guildData.tag),
+        ),
+      ],
+      components: guildData.tag ? [] : [globalTagButton()],
       username: 'Global Message',
       avatarURL:
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
@@ -82,9 +90,10 @@ export default class GlobalGeneralCommand implements CommandHandler {
     await interaction.followUp({
       embeds: [
         EmbedUtils.Success(
-          `Global channel created at ${channelMention(channel.id)} with access to General Chat.`,
+          `Global channel created at ${channelMention(channel.id)} with access to General Chat. ${guildData.tag ? '' : 'Please create a tag for your sever now.'}`,
         ),
       ],
+      components: guildData.tag ? [] : [globalTagButton()],
       ephemeral: true,
     });
   };
