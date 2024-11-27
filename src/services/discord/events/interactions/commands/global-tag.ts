@@ -39,7 +39,7 @@ export default class GlobalTagCommand implements CommandHandler {
     } else {
       await updateGuild(interaction.guildId, { tag });
     }
-    await interaction.reply({
+    await interaction.followUp({
       embeds: [EmbedUtils.Success(`Global tag set to [${tag.toUpperCase()}].`)],
       ephemeral: true,
     });
