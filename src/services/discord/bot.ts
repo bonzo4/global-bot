@@ -20,7 +20,6 @@ import GmMessageCommand from './events/messageCreate/messageCommand/gm';
 import GmMessageHandler from './events/gmMessage';
 import FlipMessageCommand from './events/messageCreate/messageCommand/flip';
 import StealMessageCommand from './events/messageCreate/messageCommand/steal';
-import SetGlobalCommand from './events/messageCreate/messageCommand/set-global-channel';
 import AiHelpMessageCommand from './events/messageCreate/messageCommand/aihelp';
 import AiHelpHandler from './events/aiHelp';
 import FlipMessageHandler from './events/flipMessage';
