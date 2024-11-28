@@ -162,9 +162,7 @@ export default class SetGlobalSuperteamCommand implements CommandHandler {
         'https://fendqrkqasmfswadknjj.supabase.co/storage/v1/object/public/pfps/GlobalDiscordLogo.png',
       options: {
         enforceNonce: true,
-        nonce,
       },
-      enforceNonce: true,
     });
 
     await interaction.followUp({
