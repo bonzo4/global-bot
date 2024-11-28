@@ -148,6 +148,7 @@ export class ScheduledMessageUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 
@@ -206,6 +207,7 @@ export class ScheduledMessageUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 

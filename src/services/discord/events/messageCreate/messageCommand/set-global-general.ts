@@ -138,6 +138,7 @@ export default class SetGlobalGeneralMessageCommand implements MessageCommand {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   };
 }

@@ -157,6 +157,7 @@ export default class SetGlobalSuperteamMessageCommand
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   };
 }

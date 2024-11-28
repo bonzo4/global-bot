@@ -103,6 +103,7 @@ export default class GlobalWhitelistCommand implements CommandHandler {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await interaction.followUp({

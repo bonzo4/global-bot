@@ -167,6 +167,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 
@@ -199,6 +200,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 
@@ -216,6 +218,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 
@@ -238,6 +241,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 
@@ -259,6 +263,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await new Promise<void>((resolve) => {
@@ -291,6 +296,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await new Promise<void>((resolve) => {
@@ -318,6 +324,7 @@ export class SendingUtils {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   }
 }

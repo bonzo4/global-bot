@@ -164,6 +164,7 @@ export default class SetGlobalSuperteamCommand implements CommandHandler {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await interaction.followUp({

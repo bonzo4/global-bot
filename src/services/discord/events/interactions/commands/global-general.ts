@@ -85,6 +85,7 @@ export default class GlobalGeneralCommand implements CommandHandler {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await interaction.followUp({

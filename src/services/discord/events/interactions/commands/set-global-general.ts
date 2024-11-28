@@ -146,6 +146,7 @@ export default class SetGlobalGeneralCommand implements CommandHandler {
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
 
     await interaction.followUp({

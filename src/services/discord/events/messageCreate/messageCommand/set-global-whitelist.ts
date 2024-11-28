@@ -157,6 +157,7 @@ export default class SetGlobalWhitelistMessageCommand
         enforceNonce: true,
         nonce,
       },
+      enforceNonce: true,
     });
   };
 }
