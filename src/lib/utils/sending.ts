@@ -26,7 +26,10 @@ type DataOptions = {
   payload:
     | { type: 'message'; data: { message: MessageRow; tag: string } }
     | { type: 'aiResponse'; data: AiResponseRow }
-    | { type: 'gmMessage'; data: { claimedPoints: boolean } }
+    | {
+        type: 'gmMessage';
+        data: { claimedPoints: boolean; guildRow: GuildRow };
+      }
     | { type: 'flip'; data: FlipRow }
     | { type: 'steal'; data: { steal: StealRow; target: UserRow } }
     | { type: 'warning'; data: string };
@@ -91,7 +94,7 @@ export class SendingUtils {
         await this.sendGMMessage(
           channelData.webhook_url,
           userRow,
-          guildData,
+          payload.data.guildRow,
           payload.data.claimedPoints,
         );
       } else if (payload.type === 'aiResponse') {
