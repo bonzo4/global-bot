@@ -1,3 +1,26 @@
+```
+src/app/*                  # Source code
+src/app/services/api/*     # API services
+src/app/services/discord/* # Discord services
+src/app/lib/data           # Data fetching
+src/app/lib/openai         # OpenAI API
+```
+
+## Features
+
+- NestJS
+- TypeScript
+- Discord.js
+- Supabase database
+- Event handling: Interactions(Buttons, slash commands, forms), and Messages(supports command messages starting with !)
+- Scheduled hooks with specific date or interval via cron
+- Hosted on Hetzner Cloud
+- Handled by Coolify Nixpacks
+- API routes:
+ - /hook - Post a scheduled hook or delete a hook
+- Only annoying bug: sometimes sends more than once in some servers
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
